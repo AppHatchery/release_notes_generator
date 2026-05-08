@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Release Notes Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --border: #d0d7de;
+      --text: #1f2328;
+      --text-muted: #656d76;
+      --accent: #0969da;
+      --accent-hover: #0550ae;
+      --danger: #cf222e;
+      --success: #1a7f37;
+      --header-bg: #1f2328;
+      --header-fg: #f0f6fc;
+      --badge-bug-bg: #ffd7d8;
+      --badge-bug-fg: #cf222e;
+      --badge-feat-bg: #ddf4ff;
+      --badge-feat-fg: #0969da;
+      --badge-other-bg: #eaeef2;
+      --badge-other-fg: #57606a;
+      --radius: 6px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--header-bg);
+      color: var(--header-fg);
+      padding: 11px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      border-bottom: 1px solid #30363d;
+    }
+    header svg { opacity: 0.8; flex-shrink: 0; }
+    header h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+    header .powered { color: #8b949e; font-size: 12px; margin-left: 4px; }
+
+    /* ── Three-column layout ── */
+    .columns {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .col {
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      overflow: hidden;
+      border-right: 1px solid var(--border);
+    }
+    .col:last-child { border-right: none; }
+    .col-picker { flex: 2.2; min-width: 380px; }
+    .col-config  { flex: 1;   min-width: 250px; max-width: 290px; border-left: 1px solid var(--border); }
+    .col-output  { flex: 2.5; min-width: 380px; }
+
+    .col-header {
+      padding: 12px 16px 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+    .col-header h2 {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+    .col-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 14px 16px;
+    }
+
+    /* ── Form controls ── */
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    select:focus, input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(9,105,218,.12);
+    }
+    select:disabled {
+      background: var(--bg);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    /* ── PR / Issue lists ── */
+    .items-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .list-panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .list-panel-header {
+      padding: 6px 10px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .count-badge {
+      background: #c8ccd0;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 0 6px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .list-panel-body {
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    /* ── Item row ── */
+    .item-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .1s;
+      user-select: none;
+    }
+    .item-row:last-child { border-bottom: none; }
+    .item-row:hover { background: #f6f8fa; }
+    .item-row.checked { background: #f0f6ff; }
+    .item-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .item-info { flex: 1; min-width: 0; }
+    .item-num { font-size: 10px; color: var(--text-muted); font-weight: 500; margin-bottom: 2px; }
+    .item-title {
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-labels { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+    .badge-bug  { background: var(--badge-bug-bg);  color: var(--badge-bug-fg); }
+    .badge-feat { background: var(--badge-feat-bg); color: var(--badge-feat-fg); }
+    .badge-other{ background: var(--badge-other-bg);color: var(--badge-other-fg);}
+
+    /* ── State messages ── */
+    .state-msg {
+      padding: 20px 12px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .error-box {
+      padding: 8px 10px;
+      background: #fff0ee;
+      border: 1px solid #ffd7d8;
+      border-radius: var(--radius);
+      font-size: 12px;
+      color: var(--danger);
+      margin-bottom: 12px;
+    }
+
+    /* ── Spinner ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+    .spinner-lg { width: 28px; height: 28px; border-width: 3px; color: var(--accent); }
+
+    /* ── Column 2 — selected items ── */
+    .selected-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .selected-empty {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .selected-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 7px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+    .sel-type {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      letter-spacing: .03em;
+    }
+    .sel-type.pr    { background: var(--badge-feat-bg); color: var(--badge-feat-fg); }
+    .sel-type.issue { background: var(--badge-bug-bg);  color: var(--badge-bug-fg); }
+    .sel-title {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      padding: 0 2px;
+      flex-shrink: 0;
+      border-radius: 3px;
+      transition: color .1s, background .1s;
+    }
+    .remove-btn:hover { color: var(--danger); background: var(--badge-bug-bg); }
+
+    /* ── Generate button ── */
+    .generate-btn {
+      width: 100%;
+      padding: 9px 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, opacity .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .generate-btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .generate-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ── Column 3 — output ── */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      padding: 0 14px;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+    .tab-btn {
+      padding: 9px 13px;
+      border: none;
+      background: none;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+      font-weight: 500;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+    .tab-panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .tab-panel.active { display: flex; }
+
+    .output-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 12px 14px 14px;
+      gap: 8px;
+    }
+    .output-pre {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text);
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-pre.placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-size: 13px;
+    }
+    .copy-btn {
+      align-self: flex-end;
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text);
+      transition: background .12s, border-color .12s, color .12s;
+    }
+    .copy-btn:hover { background: var(--bg); border-color: #9ea3a8; }
+    .copy-btn.copied { color: var(--success); border-color: var(--success); background: #f0fff4; }
+
+    .output-loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex: 1;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* ── Scrollbars ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #c8ccd0; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ea3a8; }
+  </style>
+</head>
+<body>
+
+<header>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/>
+    <line x1="16" y1="17" x2="8" y2="17"/>
+    <polyline points="10 9 9 9 8 9"/>
+  </svg>
+  <h1>Release Notes Generator</h1>
+  <span class="powered">powered by Claude</span>
+</header>
+
+<div class="columns">
+
+  <!-- ── Column 1: Repo & item picker ── -->
+  <section class="col col-picker">
+    <div class="col-header"><h2>1 &nbsp;Select Repo &amp; Changes</h2></div>
+    <div class="col-body">
+
+      <div class="form-group">
+        <label for="repo-select">Repository</label>
+        <select id="repo-select" disabled>
+          <option value="">Loading repositories…</option>
+        </select>
+        <div id="repo-error" class="error-box" style="display:none;margin-top:8px;"></div>
+      </div>
+
+      <div id="items-area" style="display:none;">
+        <div id="items-error" class="error-box" style="display:none;"></div>
+        <div class="items-grid">
+
+          <div class="list-panel">
+            <div class="list-panel-header">
+              Pull Requests
+              <span class="count-badge" id="pr-count">–</span>
+            </div>
+            <div class="list-panel-body" id="pr-list">
+              <div class="state-msg">Select a repo.</div>
+            </div>
+          </div>
+
+          <div class="list-panel">
+            <div class="list-panel-header">
+              Issues
+              <span class="count-badge" id="issue-count">–</span>
+            </div>
+            <div class="list-panel-body" id="issue-list">
+              <div class="state-msg">Select a repo.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Column 2: Config ── -->
+  <section class="col col-config">
+    <div class="col-header"><h2>2 &nbsp;Configure Release</h2></div>
+    <div class="col-body">
+
+      <div style="margin-bottom:16px;">
+        <div class="selected-section-title">Selected items</div>
+        <div id="selected-items-list">
+          <span class="selected-empty">No items selected.</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="version-input">Version number</label>
+        <input type="text" id="version-input" placeholder="e.g. 1.2.0" />
+      </div>
+
+      <div class="form-group">
+        <label for="date-input">Release date</label>
+        <input type="text" id="date-input" placeholder="DD Mon, YYYY" />
+      </div>
+
+      <div id="generate-error" class="error-box" style="display:none;"></div>
+
+      <button class="generate-btn" id="generate-btn" disabled>
+        <span id="btn-content">Generate Release Notes</span>
+      </button>
+
+    </div>
+  </section>
+
+  <!-- ── Column 3: Output ── -->
+  <section class="col col-output">
+    <div class="col-header"><h2>3 &nbsp;Generated Notes</h2></div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="store">App Store / Play Store</button>
+      <button class="tab-btn" data-tab="github">GitHub Release</button>
+    </div>
+
+    <div id="output-loading" class="output-loading">
+      <div class="spinner spinner-lg"></div>
+      <span>Generating with Claude…</span>
+    </div>
+
+    <div id="tab-store" class="tab-panel active">
+      <div class="output-wrapper">
+        <pre class="output-pre placeholder" id="store-pre">App Store / Play Store notes will appear here after generation.</pre>
+        <button class="copy-btn" id="copy-store-btn">Copy</button>
+      </div>
+    </div>
+
+    <div id="tab-github" class="tab-panel">
+      <div class="output-wrapper">
+        <pre class="output-pre placeholder" id="github-pre">GitHub Release notes will appear here after generation.</pre>
+        <button class="copy-btn" id="copy-github-btn">Copy</button>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  const state = {
+    selectedRepo: null,
+    prs: [],
+    issues: [],
+    selected: [],   // { type, number, title, body, labels }
+    storeText: '',
+    githubText: '',
+  };
+
+  // ── DOM ────────────────────────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const repoSelect    = $('repo-select');
+  const repoError     = $('repo-error');
+  const itemsArea     = $('items-area');
+  const itemsError    = $('items-error');
+  const prList        = $('pr-list');
+  const issueList     = $('issue-list');
+  const prCount       = $('pr-count');
+  const issueCount    = $('issue-count');
+  const selList       = $('selected-items-list');
+  const versionInput  = $('version-input');
+  const dateInput     = $('date-input');
+  const generateBtn   = $('generate-btn');
+  const btnContent    = $('btn-content');
+  const generateError = $('generate-error');
+  const outputLoading = $('output-loading');
+  const storePre      = $('store-pre');
+  const githubPre     = $('github-pre');
+  const copyStoreBtn  = $('copy-store-btn');
+  const copyGithubBtn = $('copy-github-btn');
+
+  // ── Utilities ──────────────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function formatDate(d) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun',
+                    'Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]}, ${d.getFullYear()}`;
+  }
+
+  function badgeClass(name) {
+    const n = name.toLowerCase();
+    if (n === 'bug') return 'badge-bug';
+    if (['enhancement','feature','feat','new'].some(k => n.includes(k))) return 'badge-feat';
+    return 'badge-other';
+  }
+
+  function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
+  function hideErr(el)       { el.style.display = 'none'; }
+
+  function updateGenerateBtn() {
+    generateBtn.disabled = !(state.selected.length > 0 && versionInput.value.trim());
+  }
+
+  // ── Selected items panel ───────────────────────────────────────────────────
+  function renderSelected() {
+    if (state.selected.length === 0) {
+      selList.innerHTML = '<span class="selected-empty">No items selected.</span>';
+      return;
+    }
+    selList.innerHTML = state.selected.map(item => `
+      <div class="selected-item">
+        <span class="sel-type ${item.type}">${item.type === 'pr' ? 'PR' : 'ISSUE'}</span>
+        <span class="sel-title" title="${esc(item.title)}">#${item.number} ${esc(item.title)}</span>
+        <button class="remove-btn" data-type="${item.type}" data-num="${item.number}" title="Remove">×</button>
+      </div>`).join('');
+
+    selList.querySelectorAll('.remove-btn').forEach(btn =>
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        deselect(btn.dataset.type, +btn.dataset.num);
+      })
+    );
+  }
+
+  function select(item) {
+    if (!state.selected.some(i => i.type === item.type && i.number === item.number)) {
+      state.selected.push(item);
+      renderSelected();
+      updateGenerateBtn();
+    }
+  }
+
+  function deselect(type, number) {
+    state.selected = state.selected.filter(i => !(i.type === type && i.number === number));
+    renderSelected();
+    updateGenerateBtn();
+    // sync checkbox
+    const cb = document.querySelector(
+      `.item-row[data-type="${type}"][data-num="${number}"] input[type="checkbox"]`
+    );
+    if (cb) { cb.checked = false; cb.closest('.item-row').classList.remove('checked'); }
+  }
+
+  // ── Render PR / Issue rows ─────────────────────────────────────────────────
+  function renderList(container, items, type) {
+    if (!items.length) {
+      container.innerHTML = `<div class="state-msg">No ${type === 'pr' ? 'merged PRs' : 'closed issues'} found.</div>`;
+      return;
+    }
+
+    container.innerHTML = items.map(item => {
+      const isChecked = state.selected.some(s => s.type === type && s.number === item.number);
+      const badges = (item.labels || [])
+        .map(l => `<span class="badge ${badgeClass(l)}">${esc(l)}</span>`).join('');
+      return `
+        <div class="item-row${isChecked ? ' checked' : ''}" data-type="${type}" data-num="${item.number}">
+          <input type="checkbox"${isChecked ? ' checked' : ''} />
+          <div class="item-info">
+            <div class="item-num">#${item.number}</div>
+            <div class="item-title" title="${esc(item.title)}">${esc(item.title)}</div>
+            ${badges ? `<div class="item-labels">${badges}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    container.querySelectorAll('.item-row').forEach(row => {
+      const cb     = row.querySelector('input[type="checkbox"]');
+      const type_  = row.dataset.type;
+      const number = +row.dataset.num;
+      const src    = type_ === 'pr' ? state.prs : state.issues;
+      const itemData = src.find(i => i.number === number);
+
+      const toggle = () => {
+        if (cb.checked) {
+          row.classList.add('checked');
+          if (itemData) select({ type: type_, ...itemData });
+        } else {
+          row.classList.remove('checked');
+          deselect(type_, number);
+        }
+      };
+
+      row.addEventListener('click', e => {
+        if (e.target !== cb) { cb.checked = !cb.checked; }
+        toggle();
+      });
+      cb.addEventListener('change', toggle);
+    });
+  }
+
+  // ── API calls ──────────────────────────────────────────────────────────────
+  async function loadRepos() {
+    repoSelect.disabled = true;
+    repoSelect.innerHTML = '<option value="">Loading repositories…</option>';
+    hideErr(repoError);
+    try {
+      const res  = await fetch('/api/repos');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+      repoSelect.innerHTML = '<option value="">— select a repository —</option>' +
+        data.map(r => `<option value="${esc(r.full_name)}">${esc(r.full_name)}</option>`).join('');
+      repoSelect.disabled = false;
+    } catch (err) {
+      showErr(repoError, err.message);
+      repoSelect.innerHTML = '<option value="">Failed to load repos</option>';
+    }
+  }
+
+  async function loadItems(fullName) {
+    const [owner, repo] = fullName.split('/');
+    itemsArea.style.display = 'block';
+    hideErr(itemsError);
+
+    prList.innerHTML    = '<div class="state-msg"><span class="spinner"></span> Loading…</div>';
+    issueList.innerHTML = '<div class="state-msg"><span class="spinner"></span> Loading…</div>';
+    prCount.textContent    = '…';
+    issueCount.textContent = '…';
+
+    const [prResult, issueResult] = await Promise.allSettled([
+      fetch(`/api/repos/${owner}/${repo}/pulls`).then(async r => {
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        return d;
+      }),
+      fetch(`/api/repos/${owner}/${repo}/issues`).then(async r => {
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        return d;
+      }),
+    ]);
+
+    if (prResult.status === 'fulfilled') {
+      state.prs = prResult.value;
+      prCount.textContent = state.prs.length;
+      renderList(prList, state.prs, 'pr');
+    } else {
+      prCount.textContent = '!';
+      prList.innerHTML = `<div class="state-msg" style="color:var(--danger)">${esc(prResult.reason.message)}</div>`;
+    }
+
+    if (issueResult.status === 'fulfilled') {
+      state.issues = issueResult.value;
+      issueCount.textContent = state.issues.length;
+      renderList(issueList, state.issues, 'issue');
+    } else {
+      issueCount.textContent = '!';
+      issueList.innerHTML = `<div class="state-msg" style="color:var(--danger)">${esc(issueResult.reason.message)}</div>`;
+    }
+  }
+
+  // ── Generate ───────────────────────────────────────────────────────────────
+  async function generate() {
+    hideErr(generateError);
+    generateBtn.disabled = true;
+    btnContent.innerHTML = '<span class="spinner"></span> Generating…';
+
+    // show loading overlay, hide tab panels
+    outputLoading.style.display = 'flex';
+    document.querySelectorAll('.tab-panel').forEach(p => { p.style.display = 'none'; });
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          repo: state.selectedRepo,
+          version: versionInput.value.trim(),
+          releaseDate: dateInput.value.trim(),
+          items: state.selected,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+      state.storeText  = data.store  || '';
+      state.githubText = data.github || '';
+
+      storePre.textContent  = state.storeText;
+      githubPre.textContent = state.githubText;
+      storePre.classList.remove('placeholder');
+      githubPre.classList.remove('placeholder');
+    } catch (err) {
+      showErr(generateError, err.message);
+    } finally {
+      outputLoading.style.display = 'none';
+      // restore tab panels
+      document.querySelectorAll('.tab-panel').forEach(p => { p.style.display = ''; });
+      const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'store';
+      document.getElementById(`tab-${activeTab}`).classList.add('active');
+
+      btnContent.textContent = 'Generate Release Notes';
+      updateGenerateBtn();
+    }
+  }
+
+  // ── Copy buttons ───────────────────────────────────────────────────────────
+  function setupCopy(btn, getContent) {
+    btn.addEventListener('click', () => {
+      const text = getContent();
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+  }
+  setupCopy(copyStoreBtn,  () => state.storeText);
+  setupCopy(copyGithubBtn, () => state.githubText);
+
+  // ── Tabs ───────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(btn =>
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+    })
+  );
+
+  // ── Event listeners ────────────────────────────────────────────────────────
+  repoSelect.addEventListener('change', () => {
+    const val = repoSelect.value;
+    if (!val) return;
+    state.selectedRepo = val;
+    state.prs      = [];
+    state.issues   = [];
+    state.selected = [];
+    renderSelected();
+    updateGenerateBtn();
+    loadItems(val);
+  });
+
+  versionInput.addEventListener('input', updateGenerateBtn);
+  generateBtn.addEventListener('click', generate);
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  dateInput.value = formatDate(new Date());
+  loadRepos();
+
+}());
+</script>
+</body>
+</html>
