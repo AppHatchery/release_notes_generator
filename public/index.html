@@ -156,6 +156,44 @@
       font-size: 10px;
       font-weight: 600;
     }
+    /* ── List search ── */
+    .list-search-wrap {
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .list-search {
+      width: 100%;
+      padding: 4px 8px 4px 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 11px;
+      outline: none;
+      background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23656d76' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 7px center;
+      color: var(--text);
+      transition: border-color .15s, background-color .15s;
+    }
+    .list-search:focus { border-color: var(--accent); background-color: var(--surface); }
+    .list-search::placeholder { color: var(--text-muted); }
+    .filter-empty { padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted); }
+
+    .select-all-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      cursor: pointer;
+      padding: 1px 4px;
+      border-radius: 3px;
+      letter-spacing: 0;
+      text-transform: none;
+      transition: background .1s;
+    }
+    .select-all-btn:hover { background: var(--badge-feat-bg); }
+    .select-all-btn:disabled { color: var(--text-muted); cursor: default; background: none; }
     .list-panel-body {
       max-height: 360px;
       overflow-y: auto;
@@ -163,18 +201,20 @@
 
     /* ── Item row ── */
     .item-row {
+      border-bottom: 1px solid var(--border);
+      user-select: none;
+    }
+    .item-row:last-child { border-bottom: none; }
+    .item-row:hover .item-row-main { background: #f6f8fa; }
+    .item-row.checked .item-row-main { background: #f0f6ff; }
+    .item-row-main {
       display: flex;
       align-items: flex-start;
       gap: 8px;
       padding: 8px 10px;
-      border-bottom: 1px solid var(--border);
       cursor: pointer;
       transition: background .1s;
-      user-select: none;
     }
-    .item-row:last-child { border-bottom: none; }
-    .item-row:hover { background: #f6f8fa; }
-    .item-row.checked { background: #f0f6ff; }
     .item-row input[type="checkbox"] {
       width: 14px;
       height: 14px;
@@ -184,16 +224,97 @@
       cursor: pointer;
     }
     .item-info { flex: 1; min-width: 0; }
-    .item-num { font-size: 10px; color: var(--text-muted); font-weight: 500; margin-bottom: 2px; }
     .item-title {
       font-size: 12px;
-      line-height: 1.4;
+      line-height: 1.5;
       color: var(--text);
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .item-title span:last-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-labels { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+
+    /* ── Status badges ── */
+    .status-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      line-height: 1.7;
+      flex-shrink: 0;
+    }
+    .status-merged { background: #f3effe; color: #8250df; }
+    .status-open   { background: #dafbe1; color: #1a7f37; }
+    .status-closed { background: #eaeef2; color: #57606a; }
+    .status-draft  { background: #eaeef2; color: #57606a; }
+
+    .item-meta {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .item-labels { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+    .expand-btn {
+      background: none;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 10px;
+      padding: 2px 5px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      border-radius: 3px;
+      transition: color .1s, background .1s, border-color .1s;
+      line-height: 1.4;
+    }
+    .expand-btn:hover { color: var(--text); background: var(--bg); border-color: var(--border); }
+    .expand-btn.open { color: var(--accent); border-color: var(--accent); background: #f0f6ff; }
+    .item-body {
+      display: none;
+      padding: 6px 10px 8px 32px;
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--text-muted);
+      background: #fafbfc;
+      border-top: 1px solid var(--border);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+    .item-body.open { display: block; }
+
+    /* ── Tone toggle ── */
+    .tone-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .tone-btn {
+      flex: 1;
+      padding: 6px 8px;
+      border: none;
+      background: var(--surface);
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: background .15s, color .15s;
+      font-weight: 500;
+    }
+    .tone-btn + .tone-btn { border-left: 1px solid var(--border); }
+    .tone-btn.active { background: var(--accent); color: white; }
 
     /* ── Badges ── */
     .badge {
@@ -207,6 +328,9 @@
     .badge-bug  { background: var(--badge-bug-bg);  color: var(--badge-bug-fg); }
     .badge-feat { background: var(--badge-feat-bg); color: var(--badge-feat-fg); }
     .badge-other{ background: var(--badge-other-bg);color: var(--badge-other-fg);}
+    .badge-test { background: #fff3cd; color: #856404; }
+    .badge-wip  { background: #fff0d4; color: #953800; }
+    .badge-docs { background: #e8f0fe; color: #1a56db; }
 
     /* ── State messages ── */
     .state-msg {
@@ -368,12 +492,21 @@
       word-break: break-word;
       color: var(--text);
       font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      outline: none;
+      cursor: text;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .output-pre:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(9,105,218,.12);
+      background: var(--surface);
     }
     .output-pre.placeholder {
       color: var(--text-muted);
       font-style: italic;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
       font-size: 13px;
+      cursor: default;
     }
     .copy-btn {
       align-self: flex-end;
@@ -445,6 +578,10 @@
             <div class="list-panel-header">
               Pull Requests
               <span class="count-badge" id="pr-count">–</span>
+              <button class="select-all-btn" id="pr-select-all" disabled>Select all</button>
+            </div>
+            <div class="list-search-wrap">
+              <input class="list-search" type="text" id="pr-search" placeholder="Filter PRs…" />
             </div>
             <div class="list-panel-body" id="pr-list">
               <div class="state-msg">Select a repo.</div>
@@ -455,6 +592,10 @@
             <div class="list-panel-header">
               Issues
               <span class="count-badge" id="issue-count">–</span>
+              <button class="select-all-btn" id="issue-select-all" disabled>Select all</button>
+            </div>
+            <div class="list-search-wrap">
+              <input class="list-search" type="text" id="issue-search" placeholder="Filter issues…" />
             </div>
             <div class="list-panel-body" id="issue-list">
               <div class="state-msg">Select a repo.</div>
@@ -488,6 +629,14 @@
         <input type="text" id="date-input" placeholder="DD Mon, YYYY" />
       </div>
 
+      <div class="form-group">
+        <label>Tone</label>
+        <div class="tone-toggle">
+          <button class="tone-btn active" data-tone="non-technical">Non-technical</button>
+          <button class="tone-btn" data-tone="technical">Technical</button>
+        </div>
+      </div>
+
       <div id="generate-error" class="error-box" style="display:none;"></div>
 
       <button class="generate-btn" id="generate-btn" disabled>
@@ -504,6 +653,7 @@
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="store">App Store / Play Store</button>
       <button class="tab-btn" data-tab="github">GitHub Release</button>
+      <button class="tab-btn" data-tab="newsletter">Newsletter</button>
     </div>
 
     <div id="output-loading" class="output-loading">
@@ -513,15 +663,22 @@
 
     <div id="tab-store" class="tab-panel active">
       <div class="output-wrapper">
-        <pre class="output-pre placeholder" id="store-pre">App Store / Play Store notes will appear here after generation.</pre>
+        <pre class="output-pre placeholder" id="store-pre" contenteditable="true" spellcheck="false">App Store / Play Store notes will appear here after generation.</pre>
         <button class="copy-btn" id="copy-store-btn">Copy</button>
       </div>
     </div>
 
     <div id="tab-github" class="tab-panel">
       <div class="output-wrapper">
-        <pre class="output-pre placeholder" id="github-pre">GitHub Release notes will appear here after generation.</pre>
+        <pre class="output-pre placeholder" id="github-pre" contenteditable="true" spellcheck="false">GitHub Release notes will appear here after generation.</pre>
         <button class="copy-btn" id="copy-github-btn">Copy</button>
+      </div>
+    </div>
+
+    <div id="tab-newsletter" class="tab-panel">
+      <div class="output-wrapper">
+        <pre class="output-pre placeholder" id="newsletter-pre" contenteditable="true" spellcheck="false">Newsletter copy will appear here after generation.</pre>
+        <button class="copy-btn" id="copy-newsletter-btn">Copy</button>
       </div>
     </div>
 
@@ -538,8 +695,7 @@
     prs: [],
     issues: [],
     selected: [],   // { type, number, title, body, labels }
-    storeText: '',
-    githubText: '',
+    tone: 'non-technical',
   };
 
   // ── DOM ────────────────────────────────────────────────────────────────────
@@ -557,12 +713,16 @@
   const dateInput     = $('date-input');
   const generateBtn   = $('generate-btn');
   const btnContent    = $('btn-content');
-  const generateError = $('generate-error');
-  const outputLoading = $('output-loading');
-  const storePre      = $('store-pre');
-  const githubPre     = $('github-pre');
-  const copyStoreBtn  = $('copy-store-btn');
-  const copyGithubBtn = $('copy-github-btn');
+  const generateError    = $('generate-error');
+  const outputLoading    = $('output-loading');
+  const storePre         = $('store-pre');
+  const githubPre        = $('github-pre');
+  const newsletterPre    = $('newsletter-pre');
+  const copyStoreBtn     = $('copy-store-btn');
+  const copyGithubBtn    = $('copy-github-btn');
+  const copyNewsletterBtn= $('copy-newsletter-btn');
+  const prSelectAllBtn   = $('pr-select-all');
+  const issueSelectAllBtn= $('issue-select-all');
 
   // ── Utilities ──────────────────────────────────────────────────────────────
   function esc(s) {
@@ -579,10 +739,25 @@
     return `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]}, ${d.getFullYear()}`;
   }
 
+  function relativeDate(str) {
+    const days = Math.floor((Date.now() - new Date(str)) / 86400000);
+    if (days === 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 30) return `${days}d ago`;
+    if (days < 365) {
+      const d = new Date(str);
+      return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]} ${d.getDate()}`;
+    }
+    return String(new Date(str).getFullYear());
+  }
+
   function badgeClass(name) {
     const n = name.toLowerCase();
-    if (n === 'bug') return 'badge-bug';
-    if (['enhancement','feature','feat','new'].some(k => n.includes(k))) return 'badge-feat';
+    if (['bug','fix','defect','regression'].some(k => n.includes(k)))        return 'badge-bug';
+    if (['enhancement','feature','feat','new'].some(k => n.includes(k)))     return 'badge-feat';
+    if (['test','qa','testing','staging','e2e'].some(k => n.includes(k)))    return 'badge-test';
+    if (['wip','in progress','in-progress','draft'].some(k => n.includes(k)))return 'badge-wip';
+    if (['doc','docs','documentation'].some(k => n.includes(k)))             return 'badge-docs';
     return 'badge-other';
   }
 
@@ -591,6 +766,40 @@
 
   function updateGenerateBtn() {
     generateBtn.disabled = !(state.selected.length > 0 && versionInput.value.trim());
+  }
+
+  // ── Select all / deselect all ─────────────────────────────────────────────
+  function syncSelectAllBtns() {
+    ['pr', 'issue'].forEach(type => {
+      const btn   = type === 'pr' ? prSelectAllBtn : issueSelectAllBtn;
+      const items = type === 'pr' ? state.prs : state.issues;
+      if (!items.length) { btn.disabled = true; btn.textContent = 'Select all'; return; }
+      btn.disabled = false;
+      const allSelected = items.every(item =>
+        state.selected.some(s => s.type === type && s.number === item.number)
+      );
+      btn.textContent = allSelected ? 'Deselect all' : 'Select all';
+    });
+  }
+
+  function toggleSelectAll(type) {
+    const items = type === 'pr' ? state.prs : state.issues;
+    const allSelected = items.every(item =>
+      state.selected.some(s => s.type === type && s.number === item.number)
+    );
+    if (allSelected) {
+      state.selected = state.selected.filter(s => s.type !== type);
+    } else {
+      items.forEach(item => {
+        if (!state.selected.some(s => s.type === type && s.number === item.number)) {
+          state.selected.push({ type, ...item });
+        }
+      });
+    }
+    renderSelected();
+    updateGenerateBtn();
+    renderList(type === 'pr' ? prList : issueList, items, type);
+    syncSelectAllBtns();
   }
 
   // ── Selected items panel ───────────────────────────────────────────────────
@@ -619,6 +828,7 @@
       state.selected.push(item);
       renderSelected();
       updateGenerateBtn();
+      syncSelectAllBtns();
     }
   }
 
@@ -626,6 +836,7 @@
     state.selected = state.selected.filter(i => !(i.type === type && i.number === number));
     renderSelected();
     updateGenerateBtn();
+    syncSelectAllBtns();
     // sync checkbox
     const cb = document.querySelector(
       `.item-row[data-type="${type}"][data-num="${number}"] input[type="checkbox"]`
@@ -636,7 +847,7 @@
   // ── Render PR / Issue rows ─────────────────────────────────────────────────
   function renderList(container, items, type) {
     if (!items.length) {
-      container.innerHTML = `<div class="state-msg">No ${type === 'pr' ? 'merged PRs' : 'closed issues'} found.</div>`;
+      container.innerHTML = `<div class="state-msg">No ${type === 'pr' ? 'pull requests' : 'issues'} found.</div>`;
       return;
     }
 
@@ -644,23 +855,50 @@
       const isChecked = state.selected.some(s => s.type === type && s.number === item.number);
       const badges = (item.labels || [])
         .map(l => `<span class="badge ${badgeClass(l)}">${esc(l)}</span>`).join('');
+      const dateStr  = item.merged_at || item.closed_at;
+      const metaParts = [
+        `#${item.number}`,
+        item.user?.login ? `@${esc(item.user.login)}` : null,
+        dateStr ? relativeDate(dateStr) : null,
+      ].filter(Boolean);
+      const status = item.status || (type === 'pr' ? 'merged' : 'closed');
+      const hasBody = item.body && item.body.trim();
       return `
         <div class="item-row${isChecked ? ' checked' : ''}" data-type="${type}" data-num="${item.number}">
-          <input type="checkbox"${isChecked ? ' checked' : ''} />
-          <div class="item-info">
-            <div class="item-num">#${item.number}</div>
-            <div class="item-title" title="${esc(item.title)}">${esc(item.title)}</div>
-            ${badges ? `<div class="item-labels">${badges}</div>` : ''}
+          <div class="item-row-main">
+            <input type="checkbox"${isChecked ? ' checked' : ''} />
+            <div class="item-info">
+              <div class="item-title" title="${esc(item.title)}">
+                <span class="status-badge status-${esc(status)}">${esc(status)}</span>
+                <span>${esc(item.title)}</span>
+              </div>
+              ${badges ? `<div class="item-labels">${badges}</div>` : ''}
+              <div class="item-meta">${metaParts.join(' · ')}</div>
+            </div>
+            ${hasBody ? `<button class="expand-btn" title="Toggle description">▶</button>` : ''}
           </div>
+          ${hasBody ? `<div class="item-body">${esc(item.body.trim())}</div>` : ''}
         </div>`;
     }).join('');
 
     container.querySelectorAll('.item-row').forEach(row => {
-      const cb     = row.querySelector('input[type="checkbox"]');
-      const type_  = row.dataset.type;
-      const number = +row.dataset.num;
-      const src    = type_ === 'pr' ? state.prs : state.issues;
-      const itemData = src.find(i => i.number === number);
+      const cb         = row.querySelector('input[type="checkbox"]');
+      const main       = row.querySelector('.item-row-main');
+      const expandBtn  = row.querySelector('.expand-btn');
+      const body       = row.querySelector('.item-body');
+      const type_      = row.dataset.type;
+      const number     = +row.dataset.num;
+      const src        = type_ === 'pr' ? state.prs : state.issues;
+      const itemData   = src.find(i => i.number === number);
+
+      if (expandBtn && body) {
+        expandBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          const open = body.classList.toggle('open');
+          expandBtn.textContent = open ? '▼' : '▶';
+          expandBtn.classList.toggle('open', open);
+        });
+      }
 
       const toggle = () => {
         if (cb.checked) {
@@ -672,15 +910,52 @@
         }
       };
 
-      row.addEventListener('click', e => {
+      main.addEventListener('click', e => {
+        if (expandBtn && (e.target === expandBtn || expandBtn.contains(e.target))) return;
         if (e.target !== cb) { cb.checked = !cb.checked; }
         toggle();
       });
       cb.addEventListener('change', toggle);
     });
+
+    applyFilter(type);
+  }
+
+  // ── List filter ───────────────────────────────────────────────────────────
+  function filterList(container, query) {
+    const q = query.toLowerCase().trim();
+    let visible = 0;
+    container.querySelectorAll('.item-row').forEach(row => {
+      const title = row.querySelector('.item-title')?.textContent.toLowerCase() || '';
+      const show  = !q || title.includes(q);
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    let msg = container.querySelector('.filter-empty');
+    if (!visible && q) {
+      if (!msg) {
+        msg = document.createElement('div');
+        msg.className = 'filter-empty';
+        msg.textContent = 'No matches.';
+        container.appendChild(msg);
+      }
+      msg.style.display = '';
+    } else if (msg) {
+      msg.style.display = 'none';
+    }
+  }
+
+  function applyFilter(type) {
+    const input = $(`${type}-search`);
+    const container = type === 'pr' ? prList : issueList;
+    if (input) filterList(container, input.value);
   }
 
   // ── API calls ──────────────────────────────────────────────────────────────
+  function repoOptions(repos) {
+    return repos.map(r => `<option value="${esc(r.full_name)}">${esc(r.name)}</option>`).join('');
+  }
+
   async function loadRepos() {
     repoSelect.disabled = true;
     repoSelect.innerHTML = '<option value="">Loading repositories…</option>';
@@ -690,8 +965,17 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-      repoSelect.innerHTML = '<option value="">— select a repository —</option>' +
-        data.map(r => `<option value="${esc(r.full_name)}">${esc(r.full_name)}</option>`).join('');
+      const { personal, orgs } = data;
+      let html = '<option value="">— select a repository —</option>';
+
+      if (personal.length) {
+        html += `<optgroup label="Personal">${repoOptions(personal)}</optgroup>`;
+      }
+      for (const org of orgs) {
+        html += `<optgroup label="${esc(org.name)}">${repoOptions(org.repos)}</optgroup>`;
+      }
+
+      repoSelect.innerHTML = html;
       repoSelect.disabled = false;
     } catch (err) {
       showErr(repoError, err.message);
@@ -739,6 +1023,8 @@
       issueCount.textContent = '!';
       issueList.innerHTML = `<div class="state-msg" style="color:var(--danger)">${esc(issueResult.reason.message)}</div>`;
     }
+
+    syncSelectAllBtns();
   }
 
   // ── Generate ───────────────────────────────────────────────────────────────
@@ -760,18 +1046,18 @@
           version: versionInput.value.trim(),
           releaseDate: dateInput.value.trim(),
           items: state.selected,
+          tone: state.tone,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-      state.storeText  = data.store  || '';
-      state.githubText = data.github || '';
-
-      storePre.textContent  = state.storeText;
-      githubPre.textContent = state.githubText;
+      storePre.textContent      = data.store      || '';
+      githubPre.textContent     = data.github     || '';
+      newsletterPre.textContent = data.newsletter || '';
       storePre.classList.remove('placeholder');
       githubPre.classList.remove('placeholder');
+      newsletterPre.classList.remove('placeholder');
     } catch (err) {
       showErr(generateError, err.message);
     } finally {
@@ -798,8 +1084,9 @@
       });
     });
   }
-  setupCopy(copyStoreBtn,  () => state.storeText);
-  setupCopy(copyGithubBtn, () => state.githubText);
+  setupCopy(copyStoreBtn,      () => storePre.innerText);
+  setupCopy(copyGithubBtn,     () => githubPre.innerText);
+  setupCopy(copyNewsletterBtn, () => newsletterPre.innerText);
 
   // ── Tabs ───────────────────────────────────────────────────────────────────
   document.querySelectorAll('.tab-btn').forEach(btn =>
@@ -819,10 +1106,27 @@
     state.prs      = [];
     state.issues   = [];
     state.selected = [];
+    $('pr-search').value    = '';
+    $('issue-search').value = '';
     renderSelected();
     updateGenerateBtn();
+    syncSelectAllBtns();
     loadItems(val);
   });
+
+  document.querySelectorAll('.tone-btn').forEach(btn =>
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.tone = btn.dataset.tone;
+    })
+  );
+
+  $('pr-search').addEventListener('input',    e => filterList(prList,    e.target.value));
+  $('issue-search').addEventListener('input', e => filterList(issueList, e.target.value));
+
+  prSelectAllBtn.addEventListener('click',    () => toggleSelectAll('pr'));
+  issueSelectAllBtn.addEventListener('click', () => toggleSelectAll('issue'));
 
   versionInput.addEventListener('input', updateGenerateBtn);
   generateBtn.addEventListener('click', generate);
