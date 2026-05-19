@@ -51,7 +51,7 @@ app.get('/api/repos', async (req, res) => {
     const byDate = (a, b) => new Date(b.updated_at) - new Date(a.updated_at);
 
     const personal = [];
-    const orgMap   = new Map(); // orgLogin → repo[]
+    const orgMap   = new Map();
 
     for (const r of userRepos) {
       if (r.owner.login === me.login) {
@@ -87,8 +87,7 @@ app.get('/api/repos/:owner/:repo/pulls', async (req, res) => {
     const pulls = await githubFetch(
       `https://api.github.com/repos/${owner}/${repo}/pulls?state=all&per_page=100&sort=updated`
     );
-    const statusOrder = { open: 0, merged: 1, draft: 2, closed: 3 };
-    pulls.sort((a, b) => statusOrder[prStatus(a)] - statusOrder[prStatus(b)]);
+    pulls.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
     res.json(
       pulls.map(p => ({
         number: p.number,
@@ -96,6 +95,7 @@ app.get('/api/repos/:owner/:repo/pulls', async (req, res) => {
         body: p.body,
         labels: p.labels.map(l => l.name),
         status: prStatus(p),
+        created_at: p.created_at,
         merged_at: p.merged_at,
         closed_at: p.closed_at,
         user: { login: p.user.login },
@@ -114,7 +114,7 @@ app.get('/api/repos/:owner/:repo/issues', async (req, res) => {
       `https://api.github.com/repos/${owner}/${repo}/issues?state=all&per_page=100&sort=updated`
     );
     const filtered = issues.filter(i => !i.pull_request);
-    filtered.sort((a, b) => (a.state === 'open' ? 0 : 1) - (b.state === 'open' ? 0 : 1));
+    filtered.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
     res.json(
       filtered.map(i => ({
         number: i.number,
@@ -122,6 +122,7 @@ app.get('/api/repos/:owner/:repo/issues', async (req, res) => {
         body: i.body,
         labels: i.labels.map(l => l.name),
         status: i.state,
+        created_at: i.created_at,
         closed_at: i.closed_at,
         user: { login: i.user.login },
       }))

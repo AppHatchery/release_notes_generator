@@ -8,81 +8,168 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f4f6f9;
-      --surface: #ffffff;
-      --border: #d0d7de;
-      --text: #1f2328;
-      --text-muted: #656d76;
-      --accent: #0969da;
-      --accent-hover: #0550ae;
-      --danger: #cf222e;
-      --success: #1a7f37;
-      --header-bg: #1f2328;
-      --header-fg: #f0f6fc;
-      --badge-bug-bg: #ffd7d8;
-      --badge-bug-fg: #cf222e;
-      --badge-feat-bg: #ddf4ff;
-      --badge-feat-fg: #0969da;
-      --badge-other-bg: #eaeef2;
-      --badge-other-fg: #57606a;
-      --radius: 6px;
+      --bg: #F0F2F8;
+      --surface: #FFFFFF;
+      --surface-2: #F8FAFC;
+      --border: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --text-light: #94A3B8;
+      --accent: #2563EB;
+      --accent-hover: #1D4ED8;
+      --accent-light: #EFF6FF;
+      --accent-border: #BFDBFE;
+      --danger: #DC2626;
+      --danger-light: #FEF2F2;
+      --danger-border: #FECACA;
+      --success: #16A34A;
+      --success-light: #F0FDF4;
+      --merged-bg: #F5F3FF;
+      --merged-fg: #7C3AED;
+      --open-bg: #DCFCE7;
+      --open-fg: #15803D;
+      --closed-bg: #F1F5F9;
+      --closed-fg: #64748B;
+      --badge-bug-bg: #FEE2E2;
+      --badge-bug-fg: #DC2626;
+      --badge-feat-bg: #DBEAFE;
+      --badge-feat-fg: #1D4ED8;
+      --badge-other-bg: #F1F5F9;
+      --badge-other-fg: #475569;
+      --radius: 8px;
+      --radius-lg: 14px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ── Header ── */
     header {
-      background: var(--header-bg);
-      color: var(--header-fg);
-      padding: 11px 20px;
+      background: var(--surface);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+      height: 56px;
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .header-brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-shrink: 0;
-      border-bottom: 1px solid #30363d;
     }
-    header svg { opacity: 0.8; flex-shrink: 0; }
-    header h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
-    header .powered { color: #8b949e; font-size: 12px; margin-left: 4px; }
+    .brand-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .header-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+    }
+    .header-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .claude-badge {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 4px 11px;
+      border-radius: 20px;
+    }
+    .claude-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
 
     /* ── Three-column layout ── */
     .columns {
       display: flex;
       flex: 1;
       overflow: hidden;
+      padding: 14px 16px 16px;
+      gap: 12px;
     }
     .col {
       display: flex;
       flex-direction: column;
       background: var(--surface);
       overflow: hidden;
-      border-right: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
     }
-    .col:last-child { border-right: none; }
     .col-picker { flex: 2.2; min-width: 380px; }
-    .col-config  { flex: 1;   min-width: 250px; max-width: 290px; border-left: 1px solid var(--border); }
+    .col-config  { flex: 1;   min-width: 250px; max-width: 290px; }
     .col-output  { flex: 2.5; min-width: 380px; }
 
+    .col-picker .col-body {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
     .col-header {
-      padding: 12px 16px 10px;
+      padding: 14px 16px 12px;
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
-      background: var(--bg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .step-num {
+      width: 22px;
+      height: 22px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
     }
     .col-header h2 {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
+      color: var(--text);
+      letter-spacing: -0.01em;
     }
     .col-body {
       flex: 1;
@@ -94,89 +181,114 @@
     .form-group { margin-bottom: 14px; }
     .form-group label {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-muted);
       margin-bottom: 5px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
     select, input[type="text"] {
       width: 100%;
-      padding: 7px 10px;
-      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
       border-radius: var(--radius);
       font-size: 13px;
+      font-family: inherit;
       color: var(--text);
       background: var(--surface);
       outline: none;
       transition: border-color .15s, box-shadow .15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 32px;
     }
     select:focus, input[type="text"]:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(9,105,218,.12);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
     select:disabled {
-      background: var(--bg);
+      background-color: var(--surface-2);
       color: var(--text-muted);
       cursor: not-allowed;
     }
 
     /* ── PR / Issue lists ── */
+    #items-area {
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
     .items-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-top: 4px;
+      flex: 1;
+      min-height: 0;
     }
     .list-panel {
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      min-height: 0;
     }
     .list-panel-header {
-      padding: 6px 10px;
-      background: var(--bg);
+      padding: 7px 10px;
+      background: var(--surface-2);
       border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 10px;
+      font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: .05em;
+      letter-spacing: .07em;
       display: flex;
       align-items: center;
       gap: 6px;
       flex-shrink: 0;
     }
     .count-badge {
-      background: #c8ccd0;
-      color: var(--text);
-      border-radius: 10px;
-      padding: 0 6px;
+      background: var(--border);
+      color: var(--text-muted);
+      border-radius: 20px;
+      padding: 0 7px;
       font-size: 10px;
       font-weight: 600;
     }
-    /* ── List search ── */
     .list-search-wrap {
-      padding: 5px 8px;
+      padding: 6px 8px;
       border-bottom: 1px solid var(--border);
       background: var(--surface);
       flex-shrink: 0;
     }
     .list-search {
       width: 100%;
-      padding: 4px 8px 4px 24px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      padding: 5px 8px 5px 26px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
       font-size: 11px;
+      font-family: inherit;
       outline: none;
-      background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23656d76' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 7px center;
+      background: var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 8px center;
       color: var(--text);
       transition: border-color .15s, background-color .15s;
     }
-    .list-search:focus { border-color: var(--accent); background-color: var(--surface); }
-    .list-search::placeholder { color: var(--text-muted); }
-    .filter-empty { padding: 12px; text-align: center; font-size: 11px; color: var(--text-muted); }
+    .list-search:focus {
+      border-color: var(--accent);
+      background-color: var(--surface);
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+    }
+    .list-search::placeholder { color: var(--text-light); }
+    .filter-empty { padding: 12px; text-align: center; font-size: 11px; color: var(--text-light); }
 
     .select-all-btn {
       margin-left: auto;
@@ -186,32 +298,31 @@
       font-weight: 600;
       color: var(--accent);
       cursor: pointer;
-      padding: 1px 4px;
-      border-radius: 3px;
+      padding: 2px 6px;
+      border-radius: 4px;
       letter-spacing: 0;
       text-transform: none;
       transition: background .1s;
+      font-family: inherit;
     }
-    .select-all-btn:hover { background: var(--badge-feat-bg); }
-    .select-all-btn:disabled { color: var(--text-muted); cursor: default; background: none; }
-    .list-panel-body {
-      max-height: 360px;
-      overflow-y: auto;
-    }
+    .select-all-btn:hover { background: var(--accent-light); }
+    .select-all-btn:disabled { color: var(--text-light); cursor: default; background: none; }
 
-    /* ── Item row ── */
+    .list-panel-body { flex: 1; overflow-y: auto; }
+
+    /* ── Item rows ── */
     .item-row {
       border-bottom: 1px solid var(--border);
       user-select: none;
     }
     .item-row:last-child { border-bottom: none; }
-    .item-row:hover .item-row-main { background: #f6f8fa; }
-    .item-row.checked .item-row-main { background: #f0f6ff; }
+    .item-row:hover .item-row-main { background: var(--surface-2); }
+    .item-row.checked .item-row-main { background: #EEF4FF; }
     .item-row-main {
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      padding: 8px 10px;
+      padding: 9px 10px;
       cursor: pointer;
       transition: background .1s;
     }
@@ -226,7 +337,7 @@
     .item-info { flex: 1; min-width: 0; }
     .item-title {
       font-size: 12px;
-      line-height: 1.5;
+      line-height: 1.45;
       color: var(--text);
       display: flex;
       align-items: baseline;
@@ -242,25 +353,26 @@
 
     /* ── Status badges ── */
     .status-badge {
-      display: inline-block;
-      padding: 1px 6px;
-      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 7px;
+      border-radius: 20px;
       font-size: 9px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .04em;
-      line-height: 1.7;
+      letter-spacing: .05em;
       flex-shrink: 0;
+      line-height: 1.6;
     }
-    .status-merged { background: #f3effe; color: #8250df; }
-    .status-open   { background: #dafbe1; color: #1a7f37; }
-    .status-closed { background: #eaeef2; color: #57606a; }
-    .status-draft  { background: #eaeef2; color: #57606a; }
+    .status-merged { background: var(--merged-bg); color: var(--merged-fg); }
+    .status-open   { background: var(--open-bg);   color: var(--open-fg);   }
+    .status-closed { background: var(--closed-bg); color: var(--closed-fg); }
+    .status-draft  { background: var(--closed-bg); color: var(--closed-fg); }
 
     .item-meta {
       font-size: 10px;
-      color: var(--text-muted);
-      margin-top: 3px;
+      color: var(--text-light);
+      margin-top: 2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -268,85 +380,65 @@
     .expand-btn {
       background: none;
       border: 1px solid transparent;
-      color: var(--text-muted);
+      color: var(--text-light);
       cursor: pointer;
       font-size: 10px;
       padding: 2px 5px;
       flex-shrink: 0;
       margin-top: 1px;
-      border-radius: 3px;
+      border-radius: 4px;
       transition: color .1s, background .1s, border-color .1s;
       line-height: 1.4;
     }
-    .expand-btn:hover { color: var(--text); background: var(--bg); border-color: var(--border); }
-    .expand-btn.open { color: var(--accent); border-color: var(--accent); background: #f0f6ff; }
+    .expand-btn:hover { color: var(--text); background: var(--surface-2); border-color: var(--border); }
+    .expand-btn.open { color: var(--accent); border-color: var(--accent-border); background: var(--accent-light); }
+
     .item-body {
       display: none;
       padding: 6px 10px 8px 32px;
       font-size: 11px;
       line-height: 1.55;
       color: var(--text-muted);
-      background: #fafbfc;
+      background: var(--surface-2);
       border-top: 1px solid var(--border);
       white-space: pre-wrap;
       word-break: break-word;
-      max-height: 140px;
+      max-height: 130px;
       overflow-y: auto;
     }
     .item-body.open { display: block; }
 
-    /* ── Tone toggle ── */
-    .tone-toggle {
-      display: flex;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .tone-btn {
-      flex: 1;
-      padding: 6px 8px;
-      border: none;
-      background: var(--surface);
-      font-size: 12px;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: background .15s, color .15s;
-      font-weight: 500;
-    }
-    .tone-btn + .tone-btn { border-left: 1px solid var(--border); }
-    .tone-btn.active { background: var(--accent); color: white; }
-
     /* ── Badges ── */
     .badge {
       display: inline-block;
-      padding: 1px 6px;
-      border-radius: 10px;
+      padding: 1px 7px;
+      border-radius: 20px;
       font-size: 10px;
       font-weight: 500;
       line-height: 1.6;
     }
-    .badge-bug  { background: var(--badge-bug-bg);  color: var(--badge-bug-fg); }
-    .badge-feat { background: var(--badge-feat-bg); color: var(--badge-feat-fg); }
-    .badge-other{ background: var(--badge-other-bg);color: var(--badge-other-fg);}
-    .badge-test { background: #fff3cd; color: #856404; }
-    .badge-wip  { background: #fff0d4; color: #953800; }
-    .badge-docs { background: #e8f0fe; color: #1a56db; }
+    .badge-bug   { background: var(--badge-bug-bg);   color: var(--badge-bug-fg); }
+    .badge-feat  { background: var(--badge-feat-bg);  color: var(--badge-feat-fg); }
+    .badge-other { background: var(--badge-other-bg); color: var(--badge-other-fg); }
+    .badge-test  { background: #FEF3C7; color: #B45309; }
+    .badge-wip   { background: #FFEDD5; color: #C2410C; }
+    .badge-docs  { background: #E0E7FF; color: #4338CA; }
 
     /* ── State messages ── */
     .state-msg {
       padding: 20px 12px;
       text-align: center;
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--text-light);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
     }
     .error-box {
-      padding: 8px 10px;
-      background: #fff0ee;
-      border: 1px solid #ffd7d8;
+      padding: 9px 12px;
+      background: var(--danger-light);
+      border: 1.5px solid var(--danger-border);
       border-radius: var(--radius);
       font-size: 12px;
       color: var(--danger);
@@ -365,43 +457,45 @@
       animation: spin .7s linear infinite;
       flex-shrink: 0;
     }
-    .spinner-lg { width: 28px; height: 28px; border-width: 3px; color: var(--accent); }
+    .spinner-lg { width: 26px; height: 26px; border-width: 2.5px; color: var(--accent); }
 
-    /* ── Column 2 — selected items ── */
+    /* ── Selected items panel ── */
     .selected-section-title {
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .05em;
+      letter-spacing: .07em;
       color: var(--text-muted);
       margin-bottom: 8px;
     }
     .selected-empty {
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--text-light);
       font-style: italic;
     }
     .selected-item {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 5px 7px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      gap: 7px;
+      padding: 6px 9px;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
       margin-bottom: 5px;
-      font-size: 12px;
+      transition: border-color .1s;
     }
+    .selected-item:hover { border-color: var(--border-strong); }
     .sel-type {
       font-size: 9px;
       font-weight: 700;
-      padding: 2px 5px;
-      border-radius: 3px;
+      padding: 2px 7px;
+      border-radius: 20px;
       flex-shrink: 0;
       letter-spacing: .03em;
+      text-transform: uppercase;
     }
-    .sel-type.pr    { background: var(--badge-feat-bg); color: var(--badge-feat-fg); }
-    .sel-type.issue { background: var(--badge-bug-bg);  color: var(--badge-bug-fg); }
+    .sel-type.pr    { background: var(--accent-light); color: var(--accent); }
+    .sel-type.issue { background: #FEF3C7; color: #D97706; }
     .sel-title {
       flex: 1;
       min-width: 0;
@@ -409,25 +503,55 @@
       overflow: hidden;
       text-overflow: ellipsis;
       color: var(--text);
+      font-size: 11px;
     }
     .remove-btn {
       background: none;
       border: none;
-      color: var(--text-muted);
+      color: var(--text-light);
       cursor: pointer;
-      font-size: 15px;
+      font-size: 16px;
       line-height: 1;
       padding: 0 2px;
       flex-shrink: 0;
-      border-radius: 3px;
+      border-radius: 4px;
       transition: color .1s, background .1s;
     }
-    .remove-btn:hover { color: var(--danger); background: var(--badge-bug-bg); }
+    .remove-btn:hover { color: var(--danger); background: var(--danger-light); }
+
+    /* ── Tone toggle ── */
+    .tone-toggle {
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 3px;
+      gap: 3px;
+      background: var(--surface-2);
+    }
+    .tone-btn {
+      flex: 1;
+      padding: 6px 8px;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: background .15s, color .15s, box-shadow .15s;
+      font-weight: 500;
+      border-radius: 5px;
+      font-family: inherit;
+    }
+    .tone-btn.active {
+      background: var(--surface);
+      color: var(--accent);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
 
     /* ── Generate button ── */
     .generate-btn {
       width: 100%;
-      padding: 9px 16px;
+      padding: 10px 16px;
       background: var(--accent);
       color: white;
       border: none;
@@ -435,26 +559,32 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: background .15s, opacity .15s;
+      transition: background .15s, box-shadow .15s, opacity .15s;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 7px;
       margin-top: 4px;
+      letter-spacing: -0.01em;
+      font-family: inherit;
+      box-shadow: 0 1px 2px rgba(37,99,235,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
     }
-    .generate-btn:hover:not(:disabled) { background: var(--accent-hover); }
-    .generate-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .generate-btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+      box-shadow: 0 2px 6px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .generate-btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 
-    /* ── Column 3 — output ── */
+    /* ── Output column ── */
     .tab-bar {
       display: flex;
       border-bottom: 1px solid var(--border);
-      padding: 0 14px;
+      padding: 0 16px;
       flex-shrink: 0;
-      background: var(--bg);
+      gap: 2px;
     }
     .tab-btn {
-      padding: 9px 13px;
+      padding: 10px 14px;
       border: none;
       background: none;
       font-size: 12px;
@@ -464,9 +594,15 @@
       margin-bottom: -1px;
       transition: color .15s, border-color .15s;
       font-weight: 500;
+      font-family: inherit;
+      letter-spacing: -0.01em;
     }
     .tab-btn:hover { color: var(--text); }
-    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
 
     .tab-panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
     .tab-panel.active { display: flex; }
@@ -477,17 +613,17 @@
       flex-direction: column;
       overflow: hidden;
       padding: 12px 14px 14px;
-      gap: 8px;
+      gap: 10px;
     }
     .output-pre {
       flex: 1;
       overflow-y: auto;
-      background: var(--bg);
-      border: 1px solid var(--border);
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius);
-      padding: 12px 14px;
+      padding: 14px 16px;
       font-size: 12px;
-      line-height: 1.65;
+      line-height: 1.7;
       white-space: pre-wrap;
       word-break: break-word;
       color: var(--text);
@@ -498,30 +634,31 @@
     }
     .output-pre:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(9,105,218,.12);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
       background: var(--surface);
     }
     .output-pre.placeholder {
-      color: var(--text-muted);
+      color: var(--text-light);
       font-style: italic;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      font-family: inherit;
       font-size: 13px;
       cursor: default;
     }
+    .output-toolbar { display: flex; justify-content: flex-end; }
     .copy-btn {
-      align-self: flex-end;
-      padding: 5px 14px;
-      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border: 1.5px solid var(--border);
       border-radius: var(--radius);
       background: var(--surface);
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
-      color: var(--text);
-      transition: background .12s, border-color .12s, color .12s;
+      color: var(--text-muted);
+      transition: all .12s;
+      font-family: inherit;
     }
-    .copy-btn:hover { background: var(--bg); border-color: #9ea3a8; }
-    .copy-btn.copied { color: var(--success); border-color: var(--success); background: #f0fff4; }
+    .copy-btn:hover { background: var(--surface-2); color: var(--text); border-color: var(--border-strong); }
+    .copy-btn.copied { color: var(--success); border-color: #86EFAC; background: var(--success-light); }
 
     .output-loading {
       display: none;
@@ -537,29 +674,40 @@
     /* ── Scrollbars ── */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #c8ccd0; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #9ea3a8; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
   </style>
 </head>
 <body>
 
 <header>
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-    <polyline points="14 2 14 8 20 8"/>
-    <line x1="16" y1="13" x2="8" y2="13"/>
-    <line x1="16" y1="17" x2="8" y2="17"/>
-    <polyline points="10 9 9 9 8 9"/>
-  </svg>
-  <h1>Release Notes Generator</h1>
-  <span class="powered">powered by Claude</span>
+  <div class="header-brand">
+    <div class="brand-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="9" y1="13" x2="15" y2="13"/>
+        <line x1="9" y1="17" x2="15" y2="17"/>
+      </svg>
+    </div>
+    <span class="brand-name">Release Notes</span>
+  </div>
+  <div class="header-divider"></div>
+  <span class="header-subtitle">Generate polished notes from GitHub PRs &amp; Issues</span>
+  <span class="claude-badge">
+    <span class="claude-dot"></span>
+    Powered by Claude
+  </span>
 </header>
 
 <div class="columns">
 
   <!-- ── Column 1: Repo & item picker ── -->
   <section class="col col-picker">
-    <div class="col-header"><h2>1 &nbsp;Select Repo &amp; Changes</h2></div>
+    <div class="col-header">
+      <div class="step-num">1</div>
+      <h2>Select Repo &amp; Changes</h2>
+    </div>
     <div class="col-body">
 
       <div class="form-group">
@@ -584,7 +732,7 @@
               <input class="list-search" type="text" id="pr-search" placeholder="Filter PRs…" />
             </div>
             <div class="list-panel-body" id="pr-list">
-              <div class="state-msg">Select a repo.</div>
+              <div class="state-msg">Select a repo above.</div>
             </div>
           </div>
 
@@ -598,7 +746,7 @@
               <input class="list-search" type="text" id="issue-search" placeholder="Filter issues…" />
             </div>
             <div class="list-panel-body" id="issue-list">
-              <div class="state-msg">Select a repo.</div>
+              <div class="state-msg">Select a repo above.</div>
             </div>
           </div>
 
@@ -609,18 +757,14 @@
 
   <!-- ── Column 2: Config ── -->
   <section class="col col-config">
-    <div class="col-header"><h2>2 &nbsp;Configure Release</h2></div>
+    <div class="col-header">
+      <div class="step-num">2</div>
+      <h2>Configure</h2>
+    </div>
     <div class="col-body">
 
-      <div style="margin-bottom:16px;">
-        <div class="selected-section-title">Selected items</div>
-        <div id="selected-items-list">
-          <span class="selected-empty">No items selected.</span>
-        </div>
-      </div>
-
       <div class="form-group">
-        <label for="version-input">Version number</label>
+        <label for="version-input">Version</label>
         <input type="text" id="version-input" placeholder="e.g. 1.2.0" />
       </div>
 
@@ -640,15 +784,28 @@
       <div id="generate-error" class="error-box" style="display:none;"></div>
 
       <button class="generate-btn" id="generate-btn" disabled>
-        <span id="btn-content">Generate Release Notes</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        <span id="btn-content">Generate Notes</span>
       </button>
+
+      <div style="margin-top:16px;">
+        <div class="selected-section-title">Selected items</div>
+        <div id="selected-items-list">
+          <span class="selected-empty">No items selected.</span>
+        </div>
+      </div>
 
     </div>
   </section>
 
   <!-- ── Column 3: Output ── -->
   <section class="col col-output">
-    <div class="col-header"><h2>3 &nbsp;Generated Notes</h2></div>
+    <div class="col-header">
+      <div class="step-num">3</div>
+      <h2>Generated Notes</h2>
+    </div>
 
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="store">App Store / Play Store</button>
@@ -664,21 +821,27 @@
     <div id="tab-store" class="tab-panel active">
       <div class="output-wrapper">
         <pre class="output-pre placeholder" id="store-pre" contenteditable="true" spellcheck="false">App Store / Play Store notes will appear here after generation.</pre>
-        <button class="copy-btn" id="copy-store-btn">Copy</button>
+        <div class="output-toolbar">
+          <button class="copy-btn" id="copy-store-btn">Copy</button>
+        </div>
       </div>
     </div>
 
     <div id="tab-github" class="tab-panel">
       <div class="output-wrapper">
         <pre class="output-pre placeholder" id="github-pre" contenteditable="true" spellcheck="false">GitHub Release notes will appear here after generation.</pre>
-        <button class="copy-btn" id="copy-github-btn">Copy</button>
+        <div class="output-toolbar">
+          <button class="copy-btn" id="copy-github-btn">Copy</button>
+        </div>
       </div>
     </div>
 
     <div id="tab-newsletter" class="tab-panel">
       <div class="output-wrapper">
         <pre class="output-pre placeholder" id="newsletter-pre" contenteditable="true" spellcheck="false">Newsletter copy will appear here after generation.</pre>
-        <button class="copy-btn" id="copy-newsletter-btn">Copy</button>
+        <div class="output-toolbar">
+          <button class="copy-btn" id="copy-newsletter-btn">Copy</button>
+        </div>
       </div>
     </div>
 
@@ -689,30 +852,28 @@
 (function () {
   'use strict';
 
-  // ── State ──────────────────────────────────────────────────────────────────
   const state = {
     selectedRepo: null,
     prs: [],
     issues: [],
-    selected: [],   // { type, number, title, body, labels }
+    selected: [],
     tone: 'non-technical',
   };
 
-  // ── DOM ────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
-  const repoSelect    = $('repo-select');
-  const repoError     = $('repo-error');
-  const itemsArea     = $('items-area');
-  const itemsError    = $('items-error');
-  const prList        = $('pr-list');
-  const issueList     = $('issue-list');
-  const prCount       = $('pr-count');
-  const issueCount    = $('issue-count');
-  const selList       = $('selected-items-list');
-  const versionInput  = $('version-input');
-  const dateInput     = $('date-input');
-  const generateBtn   = $('generate-btn');
-  const btnContent    = $('btn-content');
+  const repoSelect       = $('repo-select');
+  const repoError        = $('repo-error');
+  const itemsArea        = $('items-area');
+  const itemsError       = $('items-error');
+  const prList           = $('pr-list');
+  const issueList        = $('issue-list');
+  const prCount          = $('pr-count');
+  const issueCount       = $('issue-count');
+  const selList          = $('selected-items-list');
+  const versionInput     = $('version-input');
+  const dateInput        = $('date-input');
+  const generateBtn      = $('generate-btn');
+  const btnContent       = $('btn-content');
   const generateError    = $('generate-error');
   const outputLoading    = $('output-loading');
   const storePre         = $('store-pre');
@@ -724,7 +885,6 @@
   const prSelectAllBtn   = $('pr-select-all');
   const issueSelectAllBtn= $('issue-select-all');
 
-  // ── Utilities ──────────────────────────────────────────────────────────────
   function esc(s) {
     return String(s ?? '')
       .replace(/&/g, '&amp;')
@@ -753,11 +913,11 @@
 
   function badgeClass(name) {
     const n = name.toLowerCase();
-    if (['bug','fix','defect','regression'].some(k => n.includes(k)))        return 'badge-bug';
-    if (['enhancement','feature','feat','new'].some(k => n.includes(k)))     return 'badge-feat';
-    if (['test','qa','testing','staging','e2e'].some(k => n.includes(k)))    return 'badge-test';
-    if (['wip','in progress','in-progress','draft'].some(k => n.includes(k)))return 'badge-wip';
-    if (['doc','docs','documentation'].some(k => n.includes(k)))             return 'badge-docs';
+    if (['bug','fix','defect','regression'].some(k => n.includes(k)))         return 'badge-bug';
+    if (['enhancement','feature','feat','new'].some(k => n.includes(k)))      return 'badge-feat';
+    if (['test','qa','testing','staging','e2e'].some(k => n.includes(k)))     return 'badge-test';
+    if (['wip','in progress','in-progress','draft'].some(k => n.includes(k))) return 'badge-wip';
+    if (['doc','docs','documentation'].some(k => n.includes(k)))              return 'badge-docs';
     return 'badge-other';
   }
 
@@ -768,7 +928,6 @@
     generateBtn.disabled = !(state.selected.length > 0 && versionInput.value.trim());
   }
 
-  // ── Select all / deselect all ─────────────────────────────────────────────
   function syncSelectAllBtns() {
     ['pr', 'issue'].forEach(type => {
       const btn   = type === 'pr' ? prSelectAllBtn : issueSelectAllBtn;
@@ -802,7 +961,6 @@
     syncSelectAllBtns();
   }
 
-  // ── Selected items panel ───────────────────────────────────────────────────
   function renderSelected() {
     if (state.selected.length === 0) {
       selList.innerHTML = '<span class="selected-empty">No items selected.</span>';
@@ -837,14 +995,12 @@
     renderSelected();
     updateGenerateBtn();
     syncSelectAllBtns();
-    // sync checkbox
     const cb = document.querySelector(
       `.item-row[data-type="${type}"][data-num="${number}"] input[type="checkbox"]`
     );
     if (cb) { cb.checked = false; cb.closest('.item-row').classList.remove('checked'); }
   }
 
-  // ── Render PR / Issue rows ─────────────────────────────────────────────────
   function renderList(container, items, type) {
     if (!items.length) {
       container.innerHTML = `<div class="state-msg">No ${type === 'pr' ? 'pull requests' : 'issues'} found.</div>`;
@@ -855,11 +1011,16 @@
       const isChecked = state.selected.some(s => s.type === type && s.number === item.number);
       const badges = (item.labels || [])
         .map(l => `<span class="badge ${badgeClass(l)}">${esc(l)}</span>`).join('');
-      const dateStr  = item.merged_at || item.closed_at;
+      const activityDate = item.merged_at || item.closed_at;
+      const dateLabel = activityDate
+        ? (item.merged_at ? 'merged ' : 'closed ') + relativeDate(activityDate)
+        : item.created_at
+        ? 'opened ' + relativeDate(item.created_at)
+        : null;
       const metaParts = [
         `#${item.number}`,
         item.user?.login ? `@${esc(item.user.login)}` : null,
-        dateStr ? relativeDate(dateStr) : null,
+        dateLabel,
       ].filter(Boolean);
       const status = item.status || (type === 'pr' ? 'merged' : 'closed');
       const hasBody = item.body && item.body.trim();
@@ -882,14 +1043,14 @@
     }).join('');
 
     container.querySelectorAll('.item-row').forEach(row => {
-      const cb         = row.querySelector('input[type="checkbox"]');
-      const main       = row.querySelector('.item-row-main');
-      const expandBtn  = row.querySelector('.expand-btn');
-      const body       = row.querySelector('.item-body');
-      const type_      = row.dataset.type;
-      const number     = +row.dataset.num;
-      const src        = type_ === 'pr' ? state.prs : state.issues;
-      const itemData   = src.find(i => i.number === number);
+      const cb        = row.querySelector('input[type="checkbox"]');
+      const main      = row.querySelector('.item-row-main');
+      const expandBtn = row.querySelector('.expand-btn');
+      const body      = row.querySelector('.item-body');
+      const type_     = row.dataset.type;
+      const number    = +row.dataset.num;
+      const src       = type_ === 'pr' ? state.prs : state.issues;
+      const itemData  = src.find(i => i.number === number);
 
       if (expandBtn && body) {
         expandBtn.addEventListener('click', e => {
@@ -921,7 +1082,6 @@
     applyFilter(type);
   }
 
-  // ── List filter ───────────────────────────────────────────────────────────
   function filterList(container, query) {
     const q = query.toLowerCase().trim();
     let visible = 0;
@@ -951,7 +1111,6 @@
     if (input) filterList(container, input.value);
   }
 
-  // ── API calls ──────────────────────────────────────────────────────────────
   function repoOptions(repos) {
     return repos.map(r => `<option value="${esc(r.full_name)}">${esc(r.name)}</option>`).join('');
   }
@@ -967,14 +1126,12 @@
 
       const { personal, orgs } = data;
       let html = '<option value="">— select a repository —</option>';
-
       if (personal.length) {
         html += `<optgroup label="Personal">${repoOptions(personal)}</optgroup>`;
       }
       for (const org of orgs) {
         html += `<optgroup label="${esc(org.name)}">${repoOptions(org.repos)}</optgroup>`;
       }
-
       repoSelect.innerHTML = html;
       repoSelect.disabled = false;
     } catch (err) {
@@ -985,7 +1142,7 @@
 
   async function loadItems(fullName) {
     const [owner, repo] = fullName.split('/');
-    itemsArea.style.display = 'block';
+    itemsArea.style.display = 'flex';
     hideErr(itemsError);
 
     prList.innerHTML    = '<div class="state-msg"><span class="spinner"></span> Loading…</div>';
@@ -1027,13 +1184,11 @@
     syncSelectAllBtns();
   }
 
-  // ── Generate ───────────────────────────────────────────────────────────────
   async function generate() {
     hideErr(generateError);
     generateBtn.disabled = true;
     btnContent.innerHTML = '<span class="spinner"></span> Generating…';
 
-    // show loading overlay, hide tab panels
     outputLoading.style.display = 'flex';
     document.querySelectorAll('.tab-panel').forEach(p => { p.style.display = 'none'; });
 
@@ -1062,17 +1217,14 @@
       showErr(generateError, err.message);
     } finally {
       outputLoading.style.display = 'none';
-      // restore tab panels
       document.querySelectorAll('.tab-panel').forEach(p => { p.style.display = ''; });
       const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'store';
       document.getElementById(`tab-${activeTab}`).classList.add('active');
-
-      btnContent.textContent = 'Generate Release Notes';
+      btnContent.textContent = 'Generate Notes';
       updateGenerateBtn();
     }
   }
 
-  // ── Copy buttons ───────────────────────────────────────────────────────────
   function setupCopy(btn, getContent) {
     btn.addEventListener('click', () => {
       const text = getContent();
@@ -1084,11 +1236,10 @@
       });
     });
   }
-  setupCopy(copyStoreBtn,      () => storePre.innerText);
-  setupCopy(copyGithubBtn,     () => githubPre.innerText);
-  setupCopy(copyNewsletterBtn, () => newsletterPre.innerText);
+  setupCopy(copyStoreBtn,       () => storePre.innerText);
+  setupCopy(copyGithubBtn,      () => githubPre.innerText);
+  setupCopy(copyNewsletterBtn,  () => newsletterPre.innerText);
 
-  // ── Tabs ───────────────────────────────────────────────────────────────────
   document.querySelectorAll('.tab-btn').forEach(btn =>
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1098,7 +1249,6 @@
     })
   );
 
-  // ── Event listeners ────────────────────────────────────────────────────────
   repoSelect.addEventListener('change', () => {
     const val = repoSelect.value;
     if (!val) return;
@@ -1131,7 +1281,6 @@
   versionInput.addEventListener('input', updateGenerateBtn);
   generateBtn.addEventListener('click', generate);
 
-  // ── Init ───────────────────────────────────────────────────────────────────
   dateInput.value = formatDate(new Date());
   loadRepos();
 
