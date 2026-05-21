@@ -2,6 +2,22 @@
 
 Generate polished release notes from GitHub PRs and Issues using Claude AI — two formats at once: App Store/Play Store and GitHub Releases.
 
+## Features
+
+- Browse repos across your personal account and organizations
+- Select individual PRs and Issues to include
+- Choose between technical and non-technical tone
+- Generates two formats simultaneously: App Store/Play Store and GitHub Releases markdown
+- Search and filter PRs/Issues
+- One-click copy to clipboard
+
+## Tech Stack
+
+- **Backend:** Node.js, Express
+- **Frontend:** Vanilla HTML/CSS/JS (no framework)
+- **AI:** [Anthropic Claude](https://www.anthropic.com) via `@anthropic-ai/sdk`
+- **Data:** GitHub REST API
+
 ## Setup
 
 ### 1. Clone the repo
@@ -50,18 +66,26 @@ For development with auto-restart on file changes:
 npm run dev
 ```
 
-## Usage
-
-1. **Select a repository** from the dropdown (populated from your GitHub account)
-2. **Check PRs and Issues** you want to include in this release
-3. **Enter a version number** (e.g. `1.2.0`) and confirm the release date
-4. Click **Generate Release Notes** — Claude will produce two formats:
-   - **App Store / Play Store** — user-friendly bullet points
-   - **GitHub Release** — structured markdown with feature and bug-fix sections
-5. Copy either format to your clipboard with the **Copy** button
-
 ## Requirements
 
 - Node.js 18 or later (uses built-in `fetch`)
 - A GitHub account with at least one repository
 - An Anthropic API key with access to `claude-sonnet-4-6`
+
+## Project Structure
+
+```
+├── server.js        # Express server and GitHub/Anthropic API logic
+├── public/
+│   └── index.html   # Single-page frontend (HTML, CSS, JS)
+├── .env.example     # Environment variable template
+└── package.json
+```
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on reporting bugs, suggesting features, and submitting pull requests.
+
+## License
+
+MIT — see [LICENSE](LICENSE) for details.
