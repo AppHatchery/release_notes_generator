@@ -42,7 +42,8 @@ PORT=3000
 ```
 
 **GitHub Token** — create one at https://github.com/settings/tokens  
-Scopes needed: `repo` (for private repos) or `public_repo` (for public repos only)
+Scopes needed: `repo` (for private repos) or `public_repo` (for public repos only)  
+If using a fine-grained token, enable **Contents: Read-only** under repository permissions.
 
 **Anthropic API Key** — get one at https://console.anthropic.com
 
@@ -81,6 +82,26 @@ npm run dev
 ├── .env.example     # Environment variable template
 └── package.json
 ```
+
+## Deployment
+
+### Deploy to Render
+
+The repo includes a `render.yaml` config for one-click deployment.
+
+1. Push this repo to GitHub
+2. Go to [render.com](https://render.com) → **New** → **Web Service**
+3. Connect your GitHub repo — Render will detect `render.yaml` automatically
+4. Add the following environment variables in the Render dashboard under **Environment**:
+
+   | Variable | Value |
+   |---|---|
+   | `GITHUB_TOKEN` | Your GitHub personal access token |
+   | `ANTHROPIC_API_KEY` | Your Anthropic API key |
+
+   > `PORT` is injected by Render automatically — do not set it manually.
+
+5. Click **Deploy** — Render runs `npm install` then `npm start`
 
 ## Contributing
 
