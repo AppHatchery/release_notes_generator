@@ -23,17 +23,45 @@ function githubHeaders() {
 
 async function githubFetch(url) {
   const res = await fetch(url, { headers: githubHeaders() });
-  if (res.status === 403) {
-    const err = new Error('GitHub API rate limit exceeded. Please wait and try again.');
-    err.status = 403;
-    throw err;
-  }
   if (!res.ok) {
-    const err = new Error(`GitHub API error: ${res.status} ${res.statusText}`);
+    const body = await res.json().catch(() => ({}));
+    console.error(`[githubFetch] ${res.status} ${url}`, body);
+    const message = res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0'
+      ? 'GitHub API rate limit exceeded. Please wait and try again.'
+      : body.message || `GitHub API error: ${res.status} ${res.statusText}`;
+    const err = new Error(message);
     err.status = res.status;
     throw err;
   }
   return res.json();
+}
+
+function parseNextLink(linkHeader) {
+  if (!linkHeader) return null;
+  const match = linkHeader.match(/<([^>]+)>;\s*rel="next"/);
+  return match ? match[1] : null;
+}
+
+async function githubFetchAll(url) {
+  const results = [];
+  let next = url;
+  while (next) {
+    const res = await fetch(next, { headers: githubHeaders() });
+    if (res.status === 403) {
+      const err = new Error('GitHub API rate limit exceeded. Please wait and try again.');
+      err.status = 403;
+      throw err;
+    }
+    if (!res.ok) {
+      const err = new Error(`GitHub API error: ${res.status} ${res.statusText}`);
+      err.status = res.status;
+      throw err;
+    }
+    const page = await res.json();
+    results.push(...page);
+    next = parseNextLink(res.headers.get('link'));
+  }
+  return results;
 }
 
 function shapeRepo(r) {
@@ -80,14 +108,29 @@ function prStatus(p) {
   return 'closed';
 }
 
+// GET /api/repos/:owner/:repo/latest-release
+app.get('/api/repos/:owner/:repo/latest-release', async (req, res) => {
+  const { owner, repo } = req.params;
+  try {
+    const release = await githubFetch(
+      `https://api.github.com/repos/${owner}/${repo}/releases/latest`
+    );
+    const tag = release.tag_name.replace(/^v/, '');
+    const incremented = tag.replace(/(\d+)$/, n => String(Number(n) + 1));
+    res.json({ version: incremented });
+  } catch (err) {
+    if (err.status === 404) return res.json({ version: '1.0' });
+    res.status(err.status || 500).json({ error: err.message });
+  }
+});
+
 // GET /api/repos/:owner/:repo/pulls
 app.get('/api/repos/:owner/:repo/pulls', async (req, res) => {
   const { owner, repo } = req.params;
   try {
-    const pulls = await githubFetch(
-      `https://api.github.com/repos/${owner}/${repo}/pulls?state=all&per_page=100&sort=updated`
+    const pulls = await githubFetchAll(
+      `https://api.github.com/repos/${owner}/${repo}/pulls?state=all&per_page=100&sort=updated&direction=desc`
     );
-    pulls.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
     res.json(
       pulls.map(p => ({
         number: p.number,
@@ -110,11 +153,10 @@ app.get('/api/repos/:owner/:repo/pulls', async (req, res) => {
 app.get('/api/repos/:owner/:repo/issues', async (req, res) => {
   const { owner, repo } = req.params;
   try {
-    const issues = await githubFetch(
-      `https://api.github.com/repos/${owner}/${repo}/issues?state=all&per_page=100&sort=updated`
+    const issues = await githubFetchAll(
+      `https://api.github.com/repos/${owner}/${repo}/issues?state=all&per_page=100&sort=updated&direction=desc`
     );
     const filtered = issues.filter(i => !i.pull_request);
-    filtered.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
     res.json(
       filtered.map(i => ({
         number: i.number,
