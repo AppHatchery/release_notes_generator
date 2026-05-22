@@ -1,5 +1,7 @@
 # Release Notes Generator
 
+**Live site:** https://release-notes-generator-h2fe.onrender.com/
+
 Generate polished release notes from GitHub PRs and Issues using Claude AI — two formats at once: App Store/Play Store and GitHub Releases.
 
 ## Features

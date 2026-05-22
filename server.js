@@ -76,7 +76,7 @@ app.get('/api/repos', async (req, res) => {
       githubFetch('https://api.github.com/user/repos?per_page=100&sort=updated&affiliation=owner,organization_member'),
     ]);
 
-    const byDate = (a, b) => new Date(b.updated_at) - new Date(a.updated_at);
+    const byName = (a, b) => a.name.localeCompare(b.name);
 
     const personal = [];
     const orgMap   = new Map();
@@ -90,9 +90,9 @@ app.get('/api/repos', async (req, res) => {
       }
     }
 
-    personal.sort(byDate);
+    personal.sort(byName);
     const orgGroups = [...orgMap.entries()]
-      .map(([name, repos]) => ({ name, repos: repos.sort(byDate).map(shapeRepo) }))
+      .map(([name, repos]) => ({ name, repos: repos.sort(byName).map(shapeRepo) }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
     res.json({ personal: personal.map(shapeRepo), orgs: orgGroups });
