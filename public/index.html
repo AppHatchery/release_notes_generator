@@ -806,6 +806,7 @@
       <button class="tab-btn active" data-tab="store">App Store / Play Store</button>
       <button class="tab-btn" data-tab="github">GitHub Release</button>
       <button class="tab-btn" data-tab="newsletter">Newsletter</button>
+      <button class="tab-btn" data-tab="testplan">Test Plan</button>
     </div>
 
     <div id="output-loading" class="output-loading">
@@ -836,6 +837,15 @@
         <pre class="output-pre placeholder" id="newsletter-pre" contenteditable="true" spellcheck="false">Newsletter copy will appear here after generation.</pre>
         <div class="output-toolbar">
           <button class="copy-btn" id="copy-newsletter-btn">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-testplan" class="tab-panel">
+      <div class="output-wrapper">
+        <pre class="output-pre placeholder" id="testplan-pre" contenteditable="true" spellcheck="false">QA test plan will appear here after generation.</pre>
+        <div class="output-toolbar">
+          <button class="copy-btn" id="copy-testplan-btn">Copy</button>
         </div>
       </div>
     </div>
@@ -877,6 +887,8 @@
   const copyStoreBtn     = $('copy-store-btn');
   const copyGithubBtn    = $('copy-github-btn');
   const copyNewsletterBtn= $('copy-newsletter-btn');
+  const testplanPre      = $('testplan-pre');
+  const copyTestplanBtn  = $('copy-testplan-btn');
   const prSelectAllBtn   = $('pr-select-all');
   const issueSelectAllBtn= $('issue-select-all');
 
@@ -1202,9 +1214,11 @@
       storePre.textContent      = data.store      || '';
       githubPre.textContent     = data.github     || '';
       newsletterPre.textContent = data.newsletter || '';
+      testplanPre.textContent   = data.test_plan  || '';
       storePre.classList.remove('placeholder');
       githubPre.classList.remove('placeholder');
       newsletterPre.classList.remove('placeholder');
+      testplanPre.classList.remove('placeholder');
     } catch (err) {
       showErr(generateError, err.message);
     } finally {
@@ -1231,6 +1245,7 @@
   setupCopy(copyStoreBtn,       () => storePre.innerText);
   setupCopy(copyGithubBtn,      () => githubPre.innerText);
   setupCopy(copyNewsletterBtn,  () => newsletterPre.innerText);
+  setupCopy(copyTestplanBtn,    () => testplanPre.innerText);
 
   document.querySelectorAll('.tab-btn').forEach(btn =>
     btn.addEventListener('click', () => {

@@ -184,7 +184,9 @@ app.post('/api/generate', async (req, res) => {
         ? item.body.substring(0, 500).replace(/\n+/g, ' ')
         : 'No description';
       const labels = item.labels.length ? item.labels.join(', ') : 'none';
-      return `- [${item.type.toUpperCase()} #${item.number}] ${item.title}\n  Labels: ${labels}\n  Description: ${desc}`;
+      const urlPath = item.type === 'pr' ? 'pull' : 'issues';
+      const url = `https://github.com/${repo}/${urlPath}/${item.number}`;
+      return `- [${item.type.toUpperCase()} #${item.number}] ${item.title}\n  URL: ${url}\n  Labels: ${labels}\n  Description: ${desc}`;
     })
     .join('\n');
 
@@ -198,7 +200,7 @@ app.post('/api/generate', async (req, res) => {
 - For "store": focus entirely on visible user benefit ("you can now…", "we fixed…").
 - For "github": describe what changed and why it matters without implementation details.`;
 
-  const userPrompt = `Generate release notes for version ${version} released on ${releaseDate}.
+  const userPrompt = `Generate release notes and a QA test plan for version ${version} released on ${releaseDate}.
 
 Tone guidance:
 ${toneGuide}
@@ -206,7 +208,7 @@ ${toneGuide}
 Here are the changes (PRs and Issues):
 ${itemsList}
 
-Return a JSON object with exactly three keys:
+Return a JSON object with exactly four keys:
 
 "store": App Store / Google Play format
 - Header: "What's New in Version ${version}"
@@ -226,13 +228,41 @@ Return a JSON object with exactly three keys:
 - Section 1 "## ✨ Headline Feature": pick the single most exciting/impactful change. Write 2–3 engaging sentences leading with the user benefit. Make it feel like a product moment.
 - Section 2 "## What's New": bullet list (use •) of the remaining feature/enhancement changes. Each bullet: bold feature name + 1 sentence of enthusiastic but informative description.
 - Section 3 "## 🐛 Bug Fixes & Polish": bullet list (use •) of bug fixes and polish items. Each bullet: bold issue name + 1 short sentence on what's better now.
-- Use markdown throughout. Tone: warm, enthusiastic, written for users who love the product.`;
+- Use markdown throughout. Tone: warm, enthusiastic, written for users who love the product.
+
+"test_plan": QA test plan for this release, using this exact template structure:
+# Test Plan — [short name capturing the spirit of this release]
+
+**Build / version:** ${version}
+**Platform(s):** _[infer from labels/context, or write "All platforms" if unclear]_
+
+## Issues covered
+[One bullet per item: \`#<number>\` — <title> (<URL from the item data above>) — one-line summary of what changed/fixed]
+
+---
+
+## What to test
+
+[One ### section per issue. For each:
+### \`#<number>\` — <title>
+- [ ] [What should now happen — verify it does]
+- [ ] [Another thing to check]
+- [ ] [Edge case: empty state, offline, error condition, etc.]
+]
+
+---
+
+## Heads-up
+- [Anything testers need to know: test accounts, how to trigger flows, what NOT to worry about, nearby areas that may be affected]
+
+Write concrete, actionable checkboxes — not vague ones. Derive test steps from the PR/issue descriptions and labels.`;
 
   if (!anthropic) {
     return res.json({
       store: `What's New in Version ${version}\n\n• **Dummy store note** — placeholder while Anthropic API key is not set\n• **Another improvement** — things work better now\n• Bug fixes and performance improvements`,
       github: `## Release v${version} (${releaseDate})\n\n### ✨ Features & Enhancements\n1. **Dummy feature** — placeholder while Anthropic API key is not configured.\n\n### 🐛 Bug Fixes\n1. **Dummy fix** — placeholder while Anthropic API key is not configured.`,
       newsletter: `## 🚀 v${version} Is Here!\n\n## ✨ Headline Feature\nPlaceholder headline — add your Anthropic API key to generate real content.\n\n## What's New\n• **Placeholder feature** — description goes here.\n\n## Bug Fixes & Polish\nPlaceholder polish copy.`,
+      test_plan: `# Test Plan — v${version}\n\n**Build / version:** ${version}\n**Platform(s):** All platforms\n\n## Issues covered\n- Placeholder while Anthropic API key is not configured.\n\n---\n\n## What to test\n\n### Placeholder\n- [ ] Add your Anthropic API key to generate a real test plan.\n\n---\n\n## Heads-up\n- Set ANTHROPIC_API_KEY to enable AI-generated test plans.`,
     });
   }
 
@@ -250,8 +280,9 @@ Return a JSON object with exactly three keys:
               store:      { type: 'string', description: 'App Store / Google Play format' },
               github:     { type: 'string', description: 'GitHub Release Notes format' },
               newsletter: { type: 'string', description: 'Email newsletter format' },
+              test_plan:  { type: 'string', description: 'QA test plan in markdown using the provided template' },
             },
-            required: ['store', 'github', 'newsletter'],
+            required: ['store', 'github', 'newsletter', 'test_plan'],
           },
         },
       ],
