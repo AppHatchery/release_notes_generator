@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const anthropic = process.env.ANTHROPIC_API_KEY
-  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, timeout: 120_000 })
   : null;
 
 function githubHeaders() {
@@ -174,63 +174,35 @@ app.get('/api/repos/:owner/:repo/issues', async (req, res) => {
   }
 });
 
-// POST /api/generate
-app.post('/api/generate', async (req, res) => {
-  const { repo, version, releaseDate, items, tone = 'non-technical' } = req.body;
+const FORMAT_SCHEMA = {
+  store:      { type: 'string', description: 'App Store / Google Play format' },
+  github:     { type: 'string', description: 'GitHub Release Notes format' },
+  newsletter: { type: 'string', description: 'Email newsletter format' },
+  test_plan:  { type: 'string', description: 'QA test plan in markdown using the provided template' },
+};
 
-  const itemsList = items
-    .map(item => {
-      const desc = item.body
-        ? item.body.substring(0, 500).replace(/\n+/g, ' ')
-        : 'No description';
-      const labels = item.labels.length ? item.labels.join(', ') : 'none';
-      const urlPath = item.type === 'pr' ? 'pull' : 'issues';
-      const url = `https://github.com/${repo}/${urlPath}/${item.number}`;
-      return `- [${item.type.toUpperCase()} #${item.number}] ${item.title}\n  URL: ${url}\n  Labels: ${labels}\n  Description: ${desc}`;
-    })
-    .join('\n');
-
-  const toneGuide = tone === 'technical'
-    ? `Audience: developers and technical team members.
-- Use technical language freely (function names, API changes, component names are fine).
-- For "store": stay concise but can reference specific feature areas by name.
-- For "github": include technical specifics — affected modules, breaking changes, migration notes where relevant.`
-    : `Audience: general users and non-technical stakeholders.
-- Use plain English only — no jargon, acronyms, or code references.
-- For "store": focus entirely on visible user benefit ("you can now…", "we fixed…").
-- For "github": describe what changed and why it matters without implementation details.`;
-
-  const userPrompt = `Generate release notes and a QA test plan for version ${version} released on ${releaseDate}.
-
-Tone guidance:
-${toneGuide}
-
-Here are the changes (PRs and Issues):
-${itemsList}
-
-Return a JSON object with exactly four keys:
-
-"store": App Store / Google Play format
+function formatPromptSection(fmt, version, releaseDate) {
+  if (fmt === 'store') return `"store": App Store / Google Play format
 - Header: "What's New in Version ${version}"
 - Max 6 bullet points using "•"
 - Bold title + one-line user benefit (use ** for bold)
-- Always end with "• Bug fixes and performance improvements"
+- Always end with "• Bug fixes and performance improvements"`;
 
-"github": GitHub Release Notes format
+  if (fmt === 'github') return `"github": GitHub Release Notes format
 - Header: "Release v${version} (${releaseDate})"
 - Group under "✨ Features & Enhancements" and "🐛 Bug Fixes" using GitHub Markdown
 - Bold category headers
 - Numbered sub-points per item: what the issue was, how it was resolved, expected behavior after fix
-- Use labels to determine which section each item belongs in (bug → Bug Fixes, everything else → Features)
+- Use labels to determine which section each item belongs in (bug → Bug Fixes, everything else → Features)`;
 
-"newsletter": Email newsletter format — exciting, engaging copy
+  if (fmt === 'newsletter') return `"newsletter": Email newsletter format — exciting, engaging copy
 - First line: ## 🚀 [short punchy release title that captures the spirit of this release]
 - Section 1 "## ✨ Headline Feature": pick the single most exciting/impactful change. Write 2–3 engaging sentences leading with the user benefit. Make it feel like a product moment.
 - Section 2 "## What's New": bullet list (use •) of the remaining feature/enhancement changes. Each bullet: bold feature name + 1 sentence of enthusiastic but informative description.
 - Section 3 "## 🐛 Bug Fixes & Polish": bullet list (use •) of bug fixes and polish items. Each bullet: bold issue name + 1 short sentence on what's better now.
-- Use markdown throughout. Tone: warm, enthusiastic, written for users who love the product.
+- Use markdown throughout. Tone: warm, enthusiastic, written for users who love the product.`;
 
-"test_plan": QA test plan for this release, using this exact template structure:
+  if (fmt === 'test_plan') return `"test_plan": QA test plan for this release, using this exact template structure:
 # Test Plan — [short name capturing the spirit of this release]
 
 **Build / version:** ${version}
@@ -256,33 +228,84 @@ Return a JSON object with exactly four keys:
 - [Anything testers need to know: test accounts, how to trigger flows, what NOT to worry about, nearby areas that may be affected]
 
 Write concrete, actionable checkboxes — not vague ones. Derive test steps from the PR/issue descriptions and labels.`;
+}
+
+// POST /api/generate
+app.post('/api/generate', async (req, res) => {
+  const { repo, version, releaseDate, items, tone = 'non-technical', formats } = req.body;
+
+  const validFormats = ['store', 'github', 'newsletter', 'test_plan'];
+  const selectedFormats = Array.isArray(formats)
+    ? formats.filter(f => validFormats.includes(f))
+    : validFormats;
+  if (!selectedFormats.length) {
+    return res.status(400).json({ error: 'At least one format must be selected.' });
+  }
+
+  const itemsList = items
+    .map(item => {
+      const desc = item.body
+        ? item.body.substring(0, 500).replace(/\n+/g, ' ')
+        : 'No description';
+      const labels = item.labels.length ? item.labels.join(', ') : 'none';
+      const urlPath = item.type === 'pr' ? 'pull' : 'issues';
+      const url = `https://github.com/${repo}/${urlPath}/${item.number}`;
+      return `- [${item.type.toUpperCase()} #${item.number}] ${item.title}\n  URL: ${url}\n  Labels: ${labels}\n  Description: ${desc}`;
+    })
+    .join('\n');
+
+  const toneGuide = tone === 'technical'
+    ? `Audience: developers and technical team members.
+- Use technical language freely (function names, API changes, component names are fine).
+- For "store": stay concise but can reference specific feature areas by name.
+- For "github": include technical specifics — affected modules, breaking changes, migration notes where relevant.`
+    : `Audience: general users and non-technical stakeholders.
+- Use plain English only — no jargon, acronyms, or code references.
+- For "store": focus entirely on visible user benefit ("you can now…", "we fixed…").
+- For "github": describe what changed and why it matters without implementation details.`;
+
+  const formatSections = selectedFormats
+    .map(f => formatPromptSection(f, version, releaseDate))
+    .join('\n\n');
+
+  const userPrompt = `Generate the following for version ${version} released on ${releaseDate}.
+
+Tone guidance:
+${toneGuide}
+
+Here are the changes (PRs and Issues):
+${itemsList}
+
+Return a JSON object with exactly ${selectedFormats.length} key${selectedFormats.length > 1 ? 's' : ''}:
+
+${formatSections}`;
 
   if (!anthropic) {
-    return res.json({
+    const dummy = {
       store: `What's New in Version ${version}\n\n• **Dummy store note** — placeholder while Anthropic API key is not set\n• **Another improvement** — things work better now\n• Bug fixes and performance improvements`,
       github: `## Release v${version} (${releaseDate})\n\n### ✨ Features & Enhancements\n1. **Dummy feature** — placeholder while Anthropic API key is not configured.\n\n### 🐛 Bug Fixes\n1. **Dummy fix** — placeholder while Anthropic API key is not configured.`,
       newsletter: `## 🚀 v${version} Is Here!\n\n## ✨ Headline Feature\nPlaceholder headline — add your Anthropic API key to generate real content.\n\n## What's New\n• **Placeholder feature** — description goes here.\n\n## Bug Fixes & Polish\nPlaceholder polish copy.`,
       test_plan: `# Test Plan — v${version}\n\n**Build / version:** ${version}\n**Platform(s):** All platforms\n\n## Issues covered\n- Placeholder while Anthropic API key is not configured.\n\n---\n\n## What to test\n\n### Placeholder\n- [ ] Add your Anthropic API key to generate a real test plan.\n\n---\n\n## Heads-up\n- Set ANTHROPIC_API_KEY to enable AI-generated test plans.`,
-    });
+    };
+    return res.json(Object.fromEntries(selectedFormats.map(f => [f, dummy[f]])));
   }
 
+  res.setTimeout(120_000);
+
+  const schemaProperties = Object.fromEntries(selectedFormats.map(f => [f, FORMAT_SCHEMA[f]]));
+
   try {
-    const message = await anthropic.messages.create({
+    const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
-      max_tokens: 4096,
+      max_tokens: 8096,
       tools: [
         {
           name: 'generate_release_notes',
-          description: 'Generate release notes in three formats',
+          description: 'Generate release notes in the requested formats',
           input_schema: {
             type: 'object',
-            properties: {
-              store:      { type: 'string', description: 'App Store / Google Play format' },
-              github:     { type: 'string', description: 'GitHub Release Notes format' },
-              newsletter: { type: 'string', description: 'Email newsletter format' },
-              test_plan:  { type: 'string', description: 'QA test plan in markdown using the provided template' },
-            },
-            required: ['store', 'github', 'newsletter', 'test_plan'],
+            properties: schemaProperties,
+            required: selectedFormats,
           },
         },
       ],
@@ -290,6 +313,7 @@ Write concrete, actionable checkboxes — not vague ones. Derive test steps from
       messages: [{ role: 'user', content: userPrompt }],
     });
 
+    const message = await stream.finalMessage();
     const toolUse = message.content.find(c => c.type === 'tool_use');
     if (!toolUse) {
       return res.status(500).json({ error: 'No tool_use block in Anthropic response' });
