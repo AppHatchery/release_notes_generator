@@ -519,6 +519,42 @@
     }
     .remove-btn:hover { color: var(--danger); background: var(--danger-light); }
 
+    /* ── Format toggles ── */
+    .format-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .format-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      transition: all .15s;
+      user-select: none;
+      font-family: inherit;
+    }
+    .format-chip input[type="checkbox"] {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+      accent-color: var(--accent);
+      margin: 0;
+      cursor: pointer;
+    }
+    .format-chip:has(input:checked) {
+      border-color: var(--accent-border);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
     /* ── Tone toggle ── */
     .tone-toggle {
       display: flex;
@@ -769,6 +805,24 @@
       </div>
 
       <div class="form-group">
+        <label>Formats</label>
+        <div class="format-grid">
+          <label class="format-chip">
+            <input type="checkbox" value="store" checked /> App Store
+          </label>
+          <label class="format-chip">
+            <input type="checkbox" value="github" checked /> GitHub
+          </label>
+          <label class="format-chip">
+            <input type="checkbox" value="newsletter" checked /> Newsletter
+          </label>
+          <label class="format-chip">
+            <input type="checkbox" value="test_plan" checked /> Test Plan
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label>Tone</label>
         <div class="tone-toggle">
           <button class="tone-btn active" data-tone="non-technical">Non-technical</button>
@@ -863,7 +917,10 @@
     issues: [],
     selected: [],
     tone: 'non-technical',
+    formats: new Set(['store', 'github', 'newsletter', 'test_plan']),
   };
+
+  const TAB_TO_FORMAT = { store: 'store', github: 'github', newsletter: 'newsletter', testplan: 'test_plan' };
 
   const $ = id => document.getElementById(id);
   const repoSelect       = $('repo-select');
@@ -932,7 +989,24 @@
   function hideErr(el)       { el.style.display = 'none'; }
 
   function updateGenerateBtn() {
-    generateBtn.disabled = !(state.selected.length > 0 && versionInput.value.trim());
+    generateBtn.disabled = !(state.selected.length > 0 && versionInput.value.trim() && state.formats.size > 0);
+  }
+
+  function updateTabVisibility() {
+    let firstVisible = null;
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      const fmt = TAB_TO_FORMAT[btn.dataset.tab];
+      const show = !fmt || state.formats.has(fmt);
+      btn.style.display = show ? '' : 'none';
+      if (show && !firstVisible) firstVisible = btn;
+    });
+    const activeBtn = document.querySelector('.tab-btn.active');
+    if (activeBtn && activeBtn.style.display === 'none' && firstVisible) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      firstVisible.classList.add('active');
+      document.getElementById(`tab-${firstVisible.dataset.tab}`).classList.add('active');
+    }
   }
 
   function syncSelectAllBtns() {
@@ -1206,19 +1280,24 @@
           releaseDate: dateInput.value.trim(),
           items: state.selected,
           tone: state.tone,
+          formats: [...state.formats],
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-      storePre.textContent      = data.store      || '';
-      githubPre.textContent     = data.github     || '';
-      newsletterPre.textContent = data.newsletter || '';
-      testplanPre.textContent   = data.test_plan  || '';
-      storePre.classList.remove('placeholder');
-      githubPre.classList.remove('placeholder');
-      newsletterPre.classList.remove('placeholder');
-      testplanPre.classList.remove('placeholder');
+      const outputMap = {
+        store:      [storePre,      data.store],
+        github:     [githubPre,     data.github],
+        newsletter: [newsletterPre, data.newsletter],
+        test_plan:  [testplanPre,   data.test_plan],
+      };
+      for (const [fmt, [el, text]] of Object.entries(outputMap)) {
+        if (state.formats.has(fmt)) {
+          el.textContent = text || '';
+          el.classList.remove('placeholder');
+        }
+      }
     } catch (err) {
       showErr(generateError, err.message);
     } finally {
@@ -1228,6 +1307,7 @@
       document.getElementById(`tab-${activeTab}`).classList.add('active');
       btnContent.textContent = 'Generate Notes';
       updateGenerateBtn();
+      updateTabVisibility();
     }
   }
 
@@ -1282,6 +1362,15 @@
       state.tone = btn.dataset.tone;
     })
   );
+
+  document.querySelectorAll('.format-chip input').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (cb.checked) state.formats.add(cb.value);
+      else state.formats.delete(cb.value);
+      updateGenerateBtn();
+      updateTabVisibility();
+    });
+  });
 
   $('pr-search').addEventListener('input',    e => filterList(prList,    e.target.value));
   $('issue-search').addEventListener('input', e => filterList(issueList, e.target.value));
