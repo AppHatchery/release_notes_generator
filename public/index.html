@@ -707,6 +707,205 @@
       font-size: 13px;
     }
 
+    /* ── Date filter bar ── */
+    .date-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .date-filter-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      white-space: nowrap;
+    }
+    .date-presets { display: flex; gap: 3px; flex-wrap: wrap; }
+    .date-preset-btn {
+      padding: 2px 9px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .1s;
+      white-space: nowrap;
+    }
+    .date-preset-btn:hover { background: var(--surface); color: var(--text); }
+    .date-preset-btn.active {
+      background: var(--accent-light);
+      border-color: var(--accent-border);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .date-custom-range {
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .date-custom-range.visible { display: flex; }
+    .date-range-input {
+      padding: 2px 6px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 11px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      width: 118px;
+    }
+    .date-range-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+    }
+    .date-range-sep { font-size: 11px; color: var(--text-muted); }
+    .clear-filters-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: inherit;
+      transition: all .1s;
+      white-space: nowrap;
+    }
+    .clear-filters-btn:hover { color: var(--danger); background: var(--danger-light); }
+    .clear-filters-btn.hidden { visibility: hidden; pointer-events: none; }
+
+    /* ── Payload info bar ── */
+    .payload-info {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 14px;
+      font-size: 10px;
+      color: var(--text-light);
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .payload-info a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .payload-info a:hover { text-decoration: underline; }
+
+    /* ── Status filter bar ── */
+    .status-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .status-pill {
+      padding: 1px 7px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: transparent;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .1s;
+      white-space: nowrap;
+      letter-spacing: .02em;
+    }
+    .status-pill:hover { background: var(--surface-2); color: var(--text); }
+    .status-pill.active {
+      background: var(--accent-light);
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+
+    /* ── Labels dropdown ── */
+    .labels-filter-wrap { position: relative; margin-left: auto; }
+    .labels-filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 8px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .1s;
+      white-space: nowrap;
+    }
+    .labels-filter-btn:hover { background: var(--surface-2); color: var(--text); border-color: var(--border-strong); }
+    .labels-filter-btn.has-selection {
+      background: var(--accent-light);
+      border-color: var(--accent-border);
+      color: var(--accent);
+    }
+    /* Portal dropdown — rendered at body level to escape overflow:hidden */
+    #labels-portal {
+      position: fixed;
+      min-width: 160px;
+      max-width: 220px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      z-index: 1000;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    }
+    #labels-portal.open { display: block; }
+    .labels-dropdown-empty {
+      padding: 10px 12px;
+      font-size: 11px;
+      color: var(--text-light);
+      text-align: center;
+    }
+    .label-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      transition: background .1s;
+      user-select: none;
+    }
+    .label-option:last-child { border-bottom: none; }
+    .label-option:hover { background: var(--surface-2); }
+    .label-option input[type="checkbox"] {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+      accent-color: var(--accent);
+      margin: 0;
+      cursor: pointer;
+    }
+
     /* ── Scrollbars ── */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -751,6 +950,30 @@
 
       <div id="items-area" style="display:none;">
         <div id="items-error" class="error-box" style="display:none;"></div>
+
+        <!-- Date range bar spans both panels -->
+        <div class="date-filter-bar">
+          <span class="date-filter-label">Date</span>
+          <div class="date-presets">
+            <button class="date-preset-btn" data-preset="7d">Last 7d</button>
+            <button class="date-preset-btn" data-preset="30d">Last 30d</button>
+            <button class="date-preset-btn" data-preset="90d">Last 90d</button>
+            <button class="date-preset-btn active" data-preset="all">All</button>
+            <button class="date-preset-btn" data-preset="custom">Custom</button>
+          </div>
+          <div class="date-custom-range" id="date-custom-range">
+            <input type="date" class="date-range-input" id="date-from" />
+            <span class="date-range-sep">–</span>
+            <input type="date" class="date-range-input" id="date-to" />
+          </div>
+          <button class="clear-filters-btn hidden" id="clear-filters-btn">↺ Clear</button>
+        </div>
+
+        <div class="payload-info" id="payload-info" style="display:none;">
+          Showing items updated in the last 90 days &middot;
+          <a href="#" id="load-all-link">Load all time →</a>
+        </div>
+
         <div class="items-grid">
 
           <div class="list-panel">
@@ -758,6 +981,16 @@
               Pull Requests
               <span class="count-badge" id="pr-count">–</span>
               <button class="select-all-btn" id="pr-select-all" disabled>Select all</button>
+            </div>
+            <div class="status-filter-bar" id="pr-status-filter">
+              <button class="status-pill active" data-status="">All</button>
+              <button class="status-pill" data-status="open">Open</button>
+              <button class="status-pill" data-status="merged">Merged</button>
+              <button class="status-pill" data-status="closed">Closed</button>
+              <button class="status-pill" data-status="draft">Draft</button>
+              <div class="labels-filter-wrap">
+                <button class="labels-filter-btn" id="pr-labels-btn">Labels ▾</button>
+              </div>
             </div>
             <div class="list-search-wrap">
               <input class="list-search" type="text" id="pr-search" placeholder="Filter PRs…" />
@@ -773,6 +1006,14 @@
               <span class="count-badge" id="issue-count">–</span>
               <button class="select-all-btn" id="issue-select-all" disabled>Select all</button>
             </div>
+            <div class="status-filter-bar" id="issue-status-filter">
+              <button class="status-pill active" data-status="">All</button>
+              <button class="status-pill" data-status="open">Open</button>
+              <button class="status-pill" data-status="closed">Closed</button>
+              <div class="labels-filter-wrap">
+                <button class="labels-filter-btn" id="issue-labels-btn">Labels ▾</button>
+              </div>
+            </div>
             <div class="list-search-wrap">
               <input class="list-search" type="text" id="issue-search" placeholder="Filter issues…" />
             </div>
@@ -783,6 +1024,9 @@
 
         </div>
       </div>
+
+      <!-- Labels portal — fixed to body so overflow:hidden on panels doesn't clip it -->
+      <div id="labels-portal"></div>
     </div>
   </section>
 
@@ -918,11 +1162,148 @@
     selected: [],
     tone: 'non-technical',
     formats: new Set(['store', 'github', 'newsletter', 'test_plan']),
+    filters: {
+      pr:    { statuses: new Set(), labels: new Set() },
+      issue: { statuses: new Set(), labels: new Set() },
+      datePreset: 'all',
+      dateFrom: null,
+      dateTo:   null,
+    },
+    loadedWithSince: false,
   };
 
   const TAB_TO_FORMAT = { store: 'store', github: 'github', newsletter: 'newsletter', testplan: 'test_plan' };
 
   const $ = id => document.getElementById(id);
+
+  // ── Filter helpers ─────────────────────────────────────────────────────────
+
+  function getSinceISO(days) {
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString();
+  }
+
+  function itemActionDate(item) {
+    if (item.type === 'pr') return item.merged_at || item.closed_at || item.created_at;
+    return item.closed_at || item.created_at;
+  }
+
+  function passesDateFilter(item) {
+    const f = state.filters;
+    if (f.datePreset === 'all') return true;
+    const date = new Date(itemActionDate(item));
+    if (f.datePreset === 'custom') {
+      if (f.dateFrom && date < f.dateFrom) return false;
+      if (f.dateTo) {
+        const end = new Date(f.dateTo); end.setHours(23, 59, 59, 999);
+        if (date > end) return false;
+      }
+      return true;
+    }
+    const days = { '7d': 7, '30d': 30, '90d': 90 }[f.datePreset];
+    const since = new Date(); since.setDate(since.getDate() - days); since.setHours(0,0,0,0);
+    return date >= since;
+  }
+
+  function getFilteredItems(items, type) {
+    const tf = state.filters[type];
+    return items.filter(item => {
+      if (tf.statuses.size > 0 && !tf.statuses.has(item.status)) return false;
+      if (tf.labels.size > 0 && !item.labels.some(l => tf.labels.has(l))) return false;
+      if (!passesDateFilter(item)) return false;
+      return true;
+    });
+  }
+
+  function hasActiveFilters() {
+    const f = state.filters;
+    return f.pr.statuses.size > 0 || f.pr.labels.size > 0 ||
+           f.issue.statuses.size > 0 || f.issue.labels.size > 0 ||
+           f.datePreset !== 'all' || f.dateFrom || f.dateTo;
+  }
+
+  function updateClearBtn() {
+    $('clear-filters-btn').classList.toggle('hidden', !hasActiveFilters());
+  }
+
+  function refilter(type) {
+    const container = type === 'pr' ? prList : issueList;
+    const items = type === 'pr' ? state.prs : state.issues;
+    const filtered = getFilteredItems(items, type);
+    renderList(container, filtered, type);
+    const countEl = $(type === 'pr' ? 'pr-count' : 'issue-count');
+    countEl.textContent = filtered.length < items.length
+      ? `${filtered.length}/${items.length}`
+      : items.length;
+    syncSelectAllBtns();
+    updateClearBtn();
+  }
+
+  function refilterAll() { refilter('pr'); refilter('issue'); }
+
+  // ── Labels portal ──────────────────────────────────────────────────────────
+
+  const labelsPortal = $('labels-portal');
+  let activeLabelsType = null;
+
+  function buildLabelsPortal(type) {
+    const items = type === 'pr' ? state.prs : state.issues;
+    const allLabels = [...new Set(items.flatMap(i => i.labels))].sort();
+    const sel = state.filters[type].labels;
+    if (!allLabels.length) {
+      labelsPortal.innerHTML = '<div class="labels-dropdown-empty">No labels</div>';
+      return;
+    }
+    labelsPortal.innerHTML = allLabels.map(l => `
+      <label class="label-option">
+        <input type="checkbox" value="${esc(l)}"${sel.has(l) ? ' checked' : ''} />
+        ${esc(l)}
+      </label>`).join('');
+    labelsPortal.querySelectorAll('input').forEach(cb =>
+      cb.addEventListener('change', () => {
+        if (cb.checked) sel.add(cb.value); else sel.delete(cb.value);
+        updateLabelsBtn(type);
+        refilter(type);
+      })
+    );
+  }
+
+  function updateLabelsBtn(type) {
+    const btn = $(type === 'pr' ? 'pr-labels-btn' : 'issue-labels-btn');
+    const n = state.filters[type].labels.size;
+    btn.textContent = n ? `Labels (${n}) ▾` : 'Labels ▾';
+    btn.classList.toggle('has-selection', n > 0);
+  }
+
+  function openLabels(type, anchorBtn) {
+    if (activeLabelsType === type && labelsPortal.classList.contains('open')) {
+      closeLabels(); return;
+    }
+    activeLabelsType = type;
+    buildLabelsPortal(type);
+    const rect = anchorBtn.getBoundingClientRect();
+    labelsPortal.style.top  = `${rect.bottom + 4}px`;
+    labelsPortal.style.left = 'auto';
+    labelsPortal.style.right = `${window.innerWidth - rect.right}px`;
+    labelsPortal.classList.add('open');
+  }
+
+  function closeLabels() {
+    labelsPortal.classList.remove('open');
+    activeLabelsType = null;
+  }
+
+  document.addEventListener('click', e => {
+    if (labelsPortal.classList.contains('open') &&
+        !labelsPortal.contains(e.target) &&
+        e.target.id !== 'pr-labels-btn' &&
+        e.target.id !== 'issue-labels-btn') {
+      closeLabels();
+    }
+  });
+
   const repoSelect       = $('repo-select');
   const repoError        = $('repo-error');
   const itemsArea        = $('items-area');
@@ -1012,7 +1393,7 @@
   function syncSelectAllBtns() {
     ['pr', 'issue'].forEach(type => {
       const btn   = type === 'pr' ? prSelectAllBtn : issueSelectAllBtn;
-      const items = type === 'pr' ? state.prs : state.issues;
+      const items = getFilteredItems(type === 'pr' ? state.prs : state.issues, type);
       if (!items.length) { btn.disabled = true; btn.textContent = 'Select all'; return; }
       btn.disabled = false;
       const allSelected = items.every(item =>
@@ -1023,12 +1404,14 @@
   }
 
   function toggleSelectAll(type) {
-    const items = type === 'pr' ? state.prs : state.issues;
+    const items = getFilteredItems(type === 'pr' ? state.prs : state.issues, type);
     const allSelected = items.every(item =>
       state.selected.some(s => s.type === type && s.number === item.number)
     );
     if (allSelected) {
-      state.selected = state.selected.filter(s => s.type !== type);
+      state.selected = state.selected.filter(s =>
+        s.type !== type || !items.some(i => i.number === s.number)
+      );
     } else {
       items.forEach(item => {
         if (!state.selected.some(s => s.type === type && s.number === item.number)) {
@@ -1218,7 +1601,7 @@
     }
   }
 
-  async function loadItems(fullName) {
+  async function loadItems(fullName, sinceISO = getSinceISO(90)) {
     const [owner, repo] = fullName.split('/');
     itemsArea.style.display = 'flex';
     hideErr(itemsError);
@@ -1228,13 +1611,17 @@
     prCount.textContent    = '…';
     issueCount.textContent = '…';
 
+    const sinceParam = sinceISO ? `?since=${encodeURIComponent(sinceISO)}` : '';
+    state.loadedWithSince = !!sinceISO;
+    $('payload-info').style.display = sinceISO ? '' : 'none';
+
     const [prResult, issueResult] = await Promise.allSettled([
-      fetch(`/api/repos/${owner}/${repo}/pulls`).then(async r => {
+      fetch(`/api/repos/${owner}/${repo}/pulls${sinceParam}`).then(async r => {
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
         return d;
       }),
-      fetch(`/api/repos/${owner}/${repo}/issues`).then(async r => {
+      fetch(`/api/repos/${owner}/${repo}/issues${sinceParam}`).then(async r => {
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
         return d;
@@ -1243,8 +1630,8 @@
 
     if (prResult.status === 'fulfilled') {
       state.prs = prResult.value;
-      prCount.textContent = state.prs.length;
-      renderList(prList, state.prs, 'pr');
+      updateLabelsBtn('pr');
+      refilter('pr');
     } else {
       prCount.textContent = '!';
       prList.innerHTML = `<div class="state-msg" style="color:var(--danger)">${esc(prResult.reason.message)}</div>`;
@@ -1252,8 +1639,8 @@
 
     if (issueResult.status === 'fulfilled') {
       state.issues = issueResult.value;
-      issueCount.textContent = state.issues.length;
-      renderList(issueList, state.issues, 'issue');
+      updateLabelsBtn('issue');
+      refilter('issue');
     } else {
       issueCount.textContent = '!';
       issueList.innerHTML = `<div class="state-msg" style="color:var(--danger)">${esc(issueResult.reason.message)}</div>`;
@@ -1343,6 +1730,24 @@
     state.prs      = [];
     state.issues   = [];
     state.selected = [];
+    // Reset filters
+    state.filters.pr.statuses.clear(); state.filters.pr.labels.clear();
+    state.filters.issue.statuses.clear(); state.filters.issue.labels.clear();
+    state.filters.datePreset = 'all';
+    state.filters.dateFrom   = null;
+    state.filters.dateTo     = null;
+    ['pr', 'issue'].forEach(type => {
+      const bar = $(`${type}-status-filter`);
+      bar.querySelectorAll('.status-pill').forEach(p => p.classList.remove('active'));
+      bar.querySelector('.status-pill[data-status=""]').classList.add('active');
+      updateLabelsBtn(type);
+    });
+    document.querySelectorAll('.date-preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.date-preset-btn[data-preset="all"]').classList.add('active');
+    $('date-custom-range').classList.remove('visible');
+    $('date-from').value = ''; $('date-to').value = '';
+    $('clear-filters-btn').classList.add('hidden');
+    closeLabels();
     $('pr-search').value    = '';
     $('issue-search').value = '';
     renderSelected();
@@ -1370,6 +1775,88 @@
       updateGenerateBtn();
       updateTabVisibility();
     });
+  });
+
+  // ── Status filter pills ────────────────────────────────────────────────────
+  ['pr', 'issue'].forEach(type => {
+    $(`${type}-status-filter`).querySelectorAll('.status-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const status = pill.dataset.status;
+        const statuses = state.filters[type].statuses;
+        const bar = $(`${type}-status-filter`);
+        if (status === '') {
+          statuses.clear();
+          bar.querySelectorAll('.status-pill').forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+        } else {
+          if (statuses.has(status)) statuses.delete(status);
+          else statuses.add(status);
+          bar.querySelector('.status-pill[data-status=""]').classList.toggle('active', statuses.size === 0);
+          pill.classList.toggle('active', statuses.has(status));
+        }
+        refilter(type);
+      });
+    });
+  });
+
+  // ── Labels dropdown ────────────────────────────────────────────────────────
+  $('pr-labels-btn').addEventListener('click',    e => { e.stopPropagation(); openLabels('pr',    $('pr-labels-btn'));    });
+  $('issue-labels-btn').addEventListener('click', e => { e.stopPropagation(); openLabels('issue', $('issue-labels-btn')); });
+
+  // ── Date presets ───────────────────────────────────────────────────────────
+  document.querySelectorAll('.date-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.date-preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.filters.datePreset = btn.dataset.preset;
+      $('date-custom-range').classList.toggle('visible', btn.dataset.preset === 'custom');
+      if (btn.dataset.preset !== 'custom') {
+        state.filters.dateFrom = null;
+        state.filters.dateTo   = null;
+        $('date-from').value   = '';
+        $('date-to').value     = '';
+      }
+      refilterAll();
+    });
+  });
+
+  $('date-from').addEventListener('change', e => {
+    state.filters.dateFrom = e.target.value ? new Date(e.target.value) : null;
+    refilterAll();
+  });
+  $('date-to').addEventListener('change', e => {
+    state.filters.dateTo = e.target.value ? new Date(e.target.value) : null;
+    refilterAll();
+  });
+
+  // ── Clear all filters ──────────────────────────────────────────────────────
+  $('clear-filters-btn').addEventListener('click', () => {
+    state.filters.pr.statuses.clear();
+    state.filters.pr.labels.clear();
+    state.filters.issue.statuses.clear();
+    state.filters.issue.labels.clear();
+    state.filters.datePreset = 'all';
+    state.filters.dateFrom   = null;
+    state.filters.dateTo     = null;
+    ['pr', 'issue'].forEach(type => {
+      const bar = $(`${type}-status-filter`);
+      bar.querySelectorAll('.status-pill').forEach(p => p.classList.remove('active'));
+      bar.querySelector('.status-pill[data-status=""]').classList.add('active');
+      updateLabelsBtn(type);
+    });
+    document.querySelectorAll('.date-preset-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.date-preset-btn[data-preset="all"]').classList.add('active');
+    $('date-custom-range').classList.remove('visible');
+    $('date-from').value = '';
+    $('date-to').value   = '';
+    refilterAll();
+    closeLabels();
+  });
+
+  // ── Load all time ──────────────────────────────────────────────────────────
+  $('load-all-link').addEventListener('click', async e => {
+    e.preventDefault();
+    if (state.selectedRepo) await loadItems(state.selectedRepo, null);
   });
 
   $('pr-search').addEventListener('input',    e => filterList(prList,    e.target.value));

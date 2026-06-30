@@ -42,7 +42,7 @@ function parseNextLink(linkHeader) {
   return match ? match[1] : null;
 }
 
-async function githubFetchAll(url) {
+async function githubFetchAll(url, sinceDate) {
   const results = [];
   let next = url;
   while (next) {
@@ -58,7 +58,14 @@ async function githubFetchAll(url) {
       throw err;
     }
     const page = await res.json();
-    results.push(...page);
+    if (!page.length) break;
+    if (sinceDate) {
+      // Pages are sorted by updated desc — stop once the oldest item on the page pre-dates since
+      results.push(...page.filter(item => new Date(item.updated_at) >= sinceDate));
+      if (new Date(page[page.length - 1].updated_at) < sinceDate) break;
+    } else {
+      results.push(...page);
+    }
     next = parseNextLink(res.headers.get('link'));
   }
   return results;
@@ -127,9 +134,11 @@ app.get('/api/repos/:owner/:repo/latest-release', async (req, res) => {
 // GET /api/repos/:owner/:repo/pulls
 app.get('/api/repos/:owner/:repo/pulls', async (req, res) => {
   const { owner, repo } = req.params;
+  const sinceDate = req.query.since ? new Date(req.query.since) : null;
   try {
     const pulls = await githubFetchAll(
-      `https://api.github.com/repos/${owner}/${repo}/pulls?state=all&per_page=100&sort=updated&direction=desc`
+      `https://api.github.com/repos/${owner}/${repo}/pulls?state=all&per_page=100&sort=updated&direction=desc`,
+      sinceDate
     );
     res.json(
       pulls.map(p => ({
@@ -152,9 +161,11 @@ app.get('/api/repos/:owner/:repo/pulls', async (req, res) => {
 // GET /api/repos/:owner/:repo/issues
 app.get('/api/repos/:owner/:repo/issues', async (req, res) => {
   const { owner, repo } = req.params;
+  // GitHub Issues API natively supports ?since= (filters by updated_at)
+  const sinceParam = req.query.since ? `&since=${encodeURIComponent(req.query.since)}` : '';
   try {
     const issues = await githubFetchAll(
-      `https://api.github.com/repos/${owner}/${repo}/issues?state=all&per_page=100&sort=updated&direction=desc`
+      `https://api.github.com/repos/${owner}/${repo}/issues?state=all&per_page=100&sort=updated&direction=desc${sinceParam}`
     );
     const filtered = issues.filter(i => !i.pull_request);
     res.json(
